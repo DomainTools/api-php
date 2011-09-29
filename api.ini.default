@@ -1,0 +1,5 @@
+; Rename this file to api.ini
+; Fill these entries with your credentials
+
+username = 'your_api_username'
+key      = 'your_api_key'
