@@ -151,7 +151,7 @@ class domaintoolsAPI{
       
       if($this->configuration->get('secureAuth')){
         $timestamp                   = gmdate("Y-m-d\TH:i:s\Z");
-        $uri                         = (!empty($domainName)?'/'.$domainName.'/':'/').$this->serviceName;
+        $uri                         = '/'.$this->configuration->get('subUrl').(!empty($domainName)?'/'.$domainName.'/':'/').$this->serviceName;
         $this->options['timestamp']  = $timestamp;
         $this->options['signature']  = hash_hmac('md5', $api_username . $timestamp . $uri, $api_key);
       }

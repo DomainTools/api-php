@@ -54,7 +54,7 @@ class DomaintoolsAPIConfiguration{
 		$this->baseUrl					        = $this->host.':'.$this->port.'/'.$this->subUrl;		
 		$this->username					        = $api['username'];
 		$this->password					        = $api['key'];
-		$this->secureAuth               = false;
+		$this->secureAuth               = true;
 		$this->returnType				        = 'json';
 	}
 	
