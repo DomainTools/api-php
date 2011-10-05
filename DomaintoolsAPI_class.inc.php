@@ -141,7 +141,7 @@ class domaintoolsAPI{
      */
     public function addCredentialsOptions($domainName = ''){
     
-      if(in_array($domainName, self::$authorizedDomainsForTest)) return;
+      //if(in_array($domainName, self::$authorizedDomainsForTest)) return;
       
       $api_username = $this->configuration->get('username');
       $api_key      = $this->configuration->get('password');
