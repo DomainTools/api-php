@@ -65,6 +65,11 @@ interface RESTServiceInterface
 	 */
 	public function connect($url);
 	
-//	public function validateParams();
+	/*************** ADDITIONAL METHODS ***********************/
+	
+	/**
+	 * Returns the status of a request
+	 */
+	public function getStatus();
 }
 ?>

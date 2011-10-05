@@ -28,38 +28,21 @@ final class CurlRestService extends RESTServiceAbstract
 	 * options
 	 * Default CURL options
 	 */
-	private $options = array
-	(
-		'CURLOPT_CUSTOM_HTTPHEADER' => '',
-		'CURLOPT_CUSTOM_RAWDATA' => '',
-		'CURLOPT_HEADER' => 0,
-		'CURLOPT_USERAGENT' => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
-		'CURLOPT_VERBOSE' => 0,
-		'CURLOPT_FOLLOWLOCATION' => 0,
-		'CURLOPT_RETURNTRANSFER' => 1
-	);			 
-	 
-	/*
-	 * SETOPTION
-	 * Set a specific CURL option
-	 */
-	public function setOption ($key, $value)
+	public function __construct()
 	{
-		$this->options[$key] = $value;
+	    $this->options = array
+	    (
+		    'CURLOPT_CUSTOM_HTTPHEADER' => '',
+		    'CURLOPT_CUSTOM_RAWDATA' => '',
+		    'CURLOPT_HEADER' => 0,
+		    'CURLOPT_USERAGENT' => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
+		    'CURLOPT_VERBOSE' => 0,
+		    'CURLOPT_FOLLOWLOCATION' => 0,
+		    'CURLOPT_RETURNTRANSFER' => 1,
+		    'CURLOPT_TIMEOUT' => 10
+	    );
+      //$transport->setOption('CURLOPT_CUSTOM_HTTPHEADER', 'Content-Type: '.$this->contentType);
 	}
-	
-	/*
-	 * DROPOPTION
-	 * Drop a specific CURL option
-	 */
-	public function dropOption ($key)
-	{
-		if (isset ($this->options[$key]))
-		{
-			unset($this->options[$key]);
-		}
-	}	
-	
 	/*
 	 * SEND
 	 * Generic method to send requests to a specific URL
@@ -135,6 +118,10 @@ final class CurlRestService extends RESTServiceAbstract
 	
 	public function getInfo(){
 	    return $this->lastInfo;
+	}
+	
+	public function getStatus(){
+	  return $this->lastInfo['http_code'];
 	}
 }
 

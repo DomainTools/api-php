@@ -187,19 +187,17 @@ class domaintoolsAPI{
      */
     private function request($url){
       $transport = $this->configuration->get('transport');
-      $transport->setOption('CURLOPT_TIMEOUT', 10);
-      $transport->setOption('CURLOPT_CUSTOM_HTTPHEADER', 'Content-Type: '.$this->configuration->get('contentType'));
-
+      $transport->setContentType($this->configuration->get('contentType'));
 		  try{
 			  $response = $transport->get($url);
 		  }catch(Exception $e){
 			  throw new ServiceUnavailableException();
 		  }
 		  
-      $info = $transport->getInfo();
+      $status = $transport->getStatus();
 
-      if($info['http_code'] != null){
-          switch($info["http_code"]){
+      if($status != null){
+          switch($status){
               case 200:
                   return $response;
               case 400:

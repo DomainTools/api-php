@@ -17,6 +17,9 @@ require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'rest_service_interface_class
   */
 abstract class RESTServiceAbstract implements RESTServiceInterface
 {
+  protected $options;
+  protected $contentType;
+  
 	/*
 	 * SEND
 	 * Generic method to send requests to a specific URL
@@ -97,6 +100,36 @@ abstract class RESTServiceAbstract implements RESTServiceInterface
 	{
 		return $this->send('CONNECT', $url);
 	}	
+	
+	/*
+	 * SETOPTION
+	 * Set a specific CURL option
+	 */
+	public function setOption ($key, $value)
+	{
+		$this->options[$key] = $value;
+	}
+	
+	/*
+	 * DROPOPTION
+	 * Drop a specific CURL option
+	 */
+	public function dropOption ($key)
+	{
+		if (isset ($this->options[$key]))
+		{
+			unset($this->options[$key]);
+		}
+	}
+	
+	/*
+	 * SETCONTENTTYPE
+	 * Set a specific content-type
+	 */
+	public function setContentType($value)
+	{
+		$this->contentType = $value;
+	}			
 }
 
 ?>
