@@ -52,22 +52,47 @@ class DomaintoolsAPIConfiguration{
    * @param $serviceName
    */
 	public function __construct(){
+
+	  // defaults values
+	  $defaults = array(
+	    'username'     => '',
+	    'key'          => '',
+	    'host'         => 'api.domaintools.com',
+	    'port'         => '80',
+	    'version'      => 'v1',
+	    'secure_auth'  => true,
+	    'return_type'  => 'json',
+	    'transport'    => 'curl',
+	    'content_type' => 'application/json'
+	  );
+	  
 	  $api                            = parse_ini_file(dirname(__FILE__).'/api.ini');
-		$this->host 					          = 'api.domaintools.com';
-		$this->port						          = '80';
-		$this->subUrl					          = 'v1';
-		$this->baseUrl					        = $this->host.':'.$this->port.'/'.$this->subUrl;		
+	  if(empty($api))            $api = array();
+	  $api                            = array_merge($defaults, $api);
+	  
+		$this->host 					          = $api['host'];
+		$this->port						          = $api['port'];
+		$this->subUrl					          = $api['version'];
 		$this->username					        = $api['username'];
 		$this->password					        = $api['key'];
-		$this->secureAuth               = true;
-		$this->returnType				        = 'json';
+		$this->secureAuth               = $api['secure_auth'];
+		$this->returnType				        = $api['return_type'];
+		$this->contentType				      = $api['content_type'];
 		
-		$transport                      = new CurlRestService();
-		$content_Type                   = 'application/json';
-    $transport->setOption('CURLOPT_TIMEOUT', 10);
-    $transport->setOption('CURLOPT_CUSTOM_HTTPHEADER', 'Content-Type: '.$content_Type);
-    
-		$this->transport                = $transport;
+		$this->baseUrl					        = $this->host.':'.$this->port.'/'.$this->subUrl;				
+		
+		
+		$class = ucfirst($api['transport']).'RestService';
+
+    try{
+      $this->transport              = new $class;
+    } catch(Exception $e){
+      $this->transport              = new ucfirst($defaults['transport']).'RestService';
+    }
+	}
+	
+	public function validateOptions(){
+	
 	}
 	
 	public function get($var){
@@ -77,7 +102,6 @@ class DomaintoolsAPIConfiguration{
 	public function set($var,$val){
 		$this->$var = $val;
 		return $this;
-	}
-	
+	}	
 }
 ?>

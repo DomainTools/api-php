@@ -25,10 +25,10 @@ final class CurlRestService extends RESTServiceAbstract
     private $lastInfo;
     
 	/*
-	 * OPTIONARR
+	 * options
 	 * Default CURL options
 	 */
-	private $optionArr = array
+	private $options = array
 	(
 		'CURLOPT_CUSTOM_HTTPHEADER' => '',
 		'CURLOPT_CUSTOM_RAWDATA' => '',
@@ -45,7 +45,7 @@ final class CurlRestService extends RESTServiceAbstract
 	 */
 	public function setOption ($key, $value)
 	{
-		$this->optionArr[$key] = $value;
+		$this->options[$key] = $value;
 	}
 	
 	/*
@@ -54,9 +54,9 @@ final class CurlRestService extends RESTServiceAbstract
 	 */
 	public function dropOption ($key)
 	{
-		if (isset ($this->optionArr[$key]))
+		if (isset ($this->options[$key]))
 		{
-			unset($this->optionArr[$key]);
+			unset($this->options[$key]);
 		}
 	}	
 	
@@ -73,7 +73,7 @@ final class CurlRestService extends RESTServiceAbstract
 		
 		curl_setopt($cUrl, CURLOPT_URL, $url);
 		curl_setopt($cUrl, CURLOPT_CUSTOMREQUEST, $method);
-		foreach ($this->optionArr AS $constant => $value)
+		foreach ($this->options AS $constant => $value)
 		{
 			if (defined ($constant))
 			{
@@ -85,7 +85,7 @@ final class CurlRestService extends RESTServiceAbstract
 		{
 			$data = '';
 			
-			if (! empty ($this->optionArr['CURLOPT_CUSTOM_RAWDATA']) AND $this->optionArr['CURLOPT_CUSTOM_RAWDATA'] == true)
+			if (! empty ($this->options['CURLOPT_CUSTOM_RAWDATA']) AND $this->options['CURLOPT_CUSTOM_RAWDATA'] == true)
 			{
 				$data = http_build_query($dataArr);
 			}
@@ -97,9 +97,9 @@ final class CurlRestService extends RESTServiceAbstract
 				}			
 			}
 			
-			if ( ! empty ($this->optionArr['CURLOPT_CUSTOM_HTTPHEADER']))
+			if ( ! empty ($this->options['CURLOPT_CUSTOM_HTTPHEADER']))
 			{			
-				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array($this->optionArr['CURLOPT_CUSTOM_HTTPHEADER'] ,'Content-Length: '.strlen($data)));
+				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array($this->options['CURLOPT_CUSTOM_HTTPHEADER'] ,'Content-Length: '.strlen($data)));
 			}
 			else
 			{
@@ -110,10 +110,10 @@ final class CurlRestService extends RESTServiceAbstract
 		if (in_array(strtoupper($method), array('POST','PUT')) AND !is_array ($dataArr)) {
 		    
 		    $data = $dataArr ; 
-			if ( ! empty ($this->optionArr['CURLOPT_CUSTOM_HTTPHEADER']))
+			if ( ! empty ($this->options['CURLOPT_CUSTOM_HTTPHEADER']))
 			{
 			    
-				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array($this->optionArr['CURLOPT_CUSTOM_HTTPHEADER'] ,'Content-Length: '.strlen($data)));
+				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array($this->options['CURLOPT_CUSTOM_HTTPHEADER'] ,'Content-Length: '.strlen($data)));
 			}
 			else
 			{ 

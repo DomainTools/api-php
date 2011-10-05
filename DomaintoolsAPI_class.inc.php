@@ -186,34 +186,38 @@ class domaintoolsAPI{
      * @return response of the service
      */
     private function request($url){
-        $transport = $this->configuration->get('transport');
-		try{
-			$response = $transport->get($url);
-		}catch(Exception $e){
-			throw new ServiceUnavailableException();
-		}
-        $info = $transport->getInfo();
+      $transport = $this->configuration->get('transport');
+      $transport->setOption('CURLOPT_TIMEOUT', 10);
+      $transport->setOption('CURLOPT_CUSTOM_HTTPHEADER', 'Content-Type: '.$this->configuration->get('contentType'));
 
-        if($info['http_code'] != null){
-            switch($info["http_code"]){
-                case 200:
-                    return $response;
-                case 400:
-                    throw new BadRequestException();
-                case 403:
-                    throw new NotAuthorizedException();
-                case 404:
-                    throw new NotFoundException();
-                case 500:
-                    throw new InternalServerErrorException();
-                case 503:
-                    throw new ServiceUnavailableException();
-                default:                	
-                    throw new ServiceException();
-            }
-        }else{
-            throw new ServiceException('Response is empty');
-        }
+		  try{
+			  $response = $transport->get($url);
+		  }catch(Exception $e){
+			  throw new ServiceUnavailableException();
+		  }
+		  
+      $info = $transport->getInfo();
+
+      if($info['http_code'] != null){
+          switch($info["http_code"]){
+              case 200:
+                  return $response;
+              case 400:
+                  throw new BadRequestException();
+              case 403:
+                  throw new NotAuthorizedException();
+              case 404:
+                  throw new NotFoundException();
+              case 500:
+                  throw new InternalServerErrorException();
+              case 503:
+                  throw new ServiceUnavailableException();
+              default:                	
+                  throw new ServiceException();
+          }
+      }else{
+          throw new ServiceException('Response is empty');
+      }
     }
 
     /**

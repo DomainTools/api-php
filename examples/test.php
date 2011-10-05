@@ -1,8 +1,8 @@
 <?php
 require '../DomaintoolsAPI_class.inc.php';
 // services => whois, whois/history, hosting-history, reverse-ip, name-server-domains, reverse-whois, domain-suggestions, domain-search, mark-alert, registrant-alert
-$response = DomaintoolsAPI::from('registrant-alert')
+
+$response = DomaintoolsAPI::from('whois')
                           ->withType("xml")
-                          ->where(array('query' => 'domaintools'))
-                          ->get();                         
+                          ->get('domaintools.com');                         
 echo $response;
