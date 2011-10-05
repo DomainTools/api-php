@@ -42,10 +42,15 @@ class DomaintoolsAPIConfiguration{
 	 */
 	private $returnType;
 	
+	/*
+	 * Object in charge of calling the API
+	 */
+	private $transport;
+	
 	/**
-     * Construct of the class and initiliaze with default values
-     * @param $serviceName
-     */
+   * Construct of the class and initiliaze with default values
+   * @param $serviceName
+   */
 	public function __construct(){
 	  $api                            = parse_ini_file(dirname(__FILE__).'/api.ini');
 		$this->host 					          = 'api.domaintools.com';
@@ -56,6 +61,13 @@ class DomaintoolsAPIConfiguration{
 		$this->password					        = $api['key'];
 		$this->secureAuth               = true;
 		$this->returnType				        = 'json';
+		
+		$transport                      = new CurlRestService();
+		$content_Type                   = 'application/json';
+    $transport->setOption('CURLOPT_TIMEOUT', 10);
+    $transport->setOption('CURLOPT_CUSTOM_HTTPHEADER', 'Content-Type: '.$content_Type);
+    
+		$this->transport                = $transport;
 	}
 	
 	public function get($var){

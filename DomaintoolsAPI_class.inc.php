@@ -86,7 +86,7 @@ class domaintoolsAPI{
      * Construct of the class, init the service name, build the url and init options
      * @param $serviceName
      */
-    public function __construct($serviceName,$configuration=false){
+    public function __construct($serviceName, $configuration=false){
 		  if(!$configuration) $configuration = new domaintoolsAPIConfiguration();
   		$this->configuration = $configuration;
       $this->serviceName = self::$mapServices[$serviceName];
@@ -186,16 +186,13 @@ class domaintoolsAPI{
      * @return response of the service
      */
     private function request($url){
-        $curlRestService = new CurlRestService();
-        $content_Type = 'application/json';
-        $curlRestService->setOption('CURLOPT_TIMEOUT', 10);
-        $curlRestService->setOption('CURLOPT_CUSTOM_HTTPHEADER', 'Content-Type: '.$content_Type);
+        $transport = $this->configuration->get('transport');
 		try{
-			$response = $curlRestService->get($url);	
+			$response = $transport->get($url);
 		}catch(Exception $e){
 			throw new ServiceUnavailableException();
 		}
-        $info = $curlRestService->getInfo();
+        $info = $transport->getInfo();
 
         if($info['http_code'] != null){
             switch($info["http_code"]){
