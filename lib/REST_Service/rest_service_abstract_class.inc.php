@@ -129,7 +129,17 @@ abstract class RESTServiceAbstract implements RESTServiceInterface
 	public function setContentType($value)
 	{
 		$this->contentType = $value;
-	}			
+	}
+	
+	/*
+	 * FACTORY
+	 * Return an instance of a transport class
+	 */	
+	public static function factory($className, $params = array())
+	{
+	  $reflection_class = new ReflectionClass($className);
+    return $reflection_class->newInstanceArgs($params);
+	}
 }
 
 ?>

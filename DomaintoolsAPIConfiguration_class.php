@@ -85,9 +85,9 @@ class DomaintoolsAPIConfiguration{
 		$class = ucfirst($api['transport']).'RestService';
 
     try{
-      $this->transport              = new $class;
+      $this->transport              = RESTServiceAbstract::factory($class, array($this->contentType));
     } catch(Exception $e){
-      $this->transport              = new ucfirst($defaults['transport']).'RestService';
+      $this->transport              = RESTServiceAbstract::factory(ucfirst($defaults['transport']).'RestService', array($this->contentType));
     }
 	}
 	

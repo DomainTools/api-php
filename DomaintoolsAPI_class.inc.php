@@ -187,7 +187,6 @@ class domaintoolsAPI{
      */
     private function request($url){
       $transport = $this->configuration->get('transport');
-      $transport->setContentType($this->configuration->get('contentType'));
 		  try{
 			  $response = $transport->get($url);
 		  }catch(Exception $e){

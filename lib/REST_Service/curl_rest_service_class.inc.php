@@ -28,10 +28,9 @@ final class CurlRestService extends RESTServiceAbstract
 	 * options
 	 * Default CURL options
 	 */
-	public function __construct()
+	public function __construct($content_type, $options = array())
 	{
-	    $this->options = array
-	    (
+	    $defaults = array(
 		    'CURLOPT_CUSTOM_HTTPHEADER' => '',
 		    'CURLOPT_CUSTOM_RAWDATA' => '',
 		    'CURLOPT_HEADER' => 0,
@@ -41,7 +40,9 @@ final class CurlRestService extends RESTServiceAbstract
 		    'CURLOPT_RETURNTRANSFER' => 1,
 		    'CURLOPT_TIMEOUT' => 10
 	    );
-      //$transport->setOption('CURLOPT_CUSTOM_HTTPHEADER', 'Content-Type: '.$this->contentType);
+	    
+	    $this->options = array_merge($defaults, $options);
+	    $this->contentType = $content_type;
 	}
 	/*
 	 * SEND
