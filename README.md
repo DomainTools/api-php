@@ -27,10 +27,13 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 
       //Make a call to the webservice whois with a xml return 
       //type for the domain name : example.com
-      $response = DomaintoolsAPI::from("whois")-> //name of the service (whois, info, availability) 
-                             withType("xml")-> // Return type (JSON or XML)
-                             get("example.com"); //Domain name
+      $request = new DomaintoolsAPI();
       
+      $request->from("whois") //name of the service (whois, info, availability) 
+              ->withType("xml") // Return type (JSON or XML)
+              ->domain("example.com"); //Domain name
+      
+      $response = $request->execute();
       //Display the response
       echo $response;
     ?>
@@ -48,9 +51,11 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 					set('password','anotherPassword');
 	//Make a call to the webservice whois with a xml return 
 	//type for the domain name : example.com
-	$response = DomaintoolsAPI::from("whois",$configuration)->
-							withType("json")->
-							get("example.com");
+	$request = new DomaintoolsAPI($configuration);
+	$request->from("whois")
+	        ->withType("json")
+					->domain("example.com");
+	$response = $request->execute();
 	//Display the response
 	echo $response;
 	?>
@@ -102,33 +107,31 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 
 The domaintoolsAPI PHP Wrapper is a fluent API implemented by using method chaining.
 
-The simplest call you can do is:
+After having instanciate your request like this:
 
-    $whoisResponse = DomaintoolsAPI::from("whois")->get("example.com");
+    $request = new DomaintoolsAPI();
 
-You can combine methods to specify return type or options:
+You can combine methods to specify return type, options, etc.:
     
-    $thumbnailResponse = DomaintoolsAPI::from("thumbnail")->where(array("return" => "fullsize"))->withType("xml")->get("example.com");
+    $request->from("thumbnail")->where(array("return" => "fullsize"))->withType("xml")->domain("example.com");
 
 ### Choose service to call - from ###
 
-    $domaintoolsAPIObject = DomaintoolsAPI::from("whois");
-
-The method **from** is the first method to call to init a DomaintoolsAPIObject. It takes only one parameter, the **name** of the service you want to request.
+    $request->from("whois");
 
 You can find the list of available services on [domaintools.com](http://domaintools.com "domaintools.com") .
 
-### Call the service - get ###
+### Call the service - execute ###
 
-    $whoisResponse = DomaintoolsAPI::from("whois")->get("example.com");
+    $request->from("whois")->domain("example.com")->execute();
 
-To call the service use the method **get** which takes only one parameter, the domain name, and return the response. 
+To call the service use the method **execute**, and return the response. 
 
 The response is a string with the format of the specify return type (JSON or XML for example).
 
 ### Specify options - where ###
 
-    $domaintoolsAPIObject = DomaintoolsAPI::from("domain-search")->where(array("query" => "domain tools"));
+    $request->from("domain-search")->where(array("query" => "domain tools"));
 
 The method **where** allows to specify options of the service. It takes only on parameter, an array of options where the key is the name of the option and value is the value of the option.
 
@@ -136,7 +139,7 @@ The list of options for each service is available on the [domaintoolsAPI documen
 
 ### Specify return type - withType ###
 
-    $domaintoolsAPIObject = DomaintoolsAPI::from("whois")->withType("json");
+    $request->from("whois")->withType("json");
 
 The method **withType** allows to specify the return type of the response. It takes only one parameter, the **name** of the return type.
 
