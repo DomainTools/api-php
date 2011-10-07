@@ -7,7 +7,7 @@
 * For the full copyright and license information, please view the LICENSE
 * file that was distributed with this source code.
 */
-class DomaintoolsAPIConfiguration{
+class DomaintoolsAPIConfiguration {
 
 	/*
 	 * Server Host
@@ -51,57 +51,79 @@ class DomaintoolsAPIConfiguration{
    * Construct of the class and initiliaze with default values
    * @param $serviceName
    */
-	public function __construct(){
+	public function __construct($ini_resource = '') {
+	
+	  if(empty($ini_resource)) $ini_resource = __DIR__.'/api.ini';
 
-	  // defaults values
-	  $defaults = array(
-	    'username'     => '',
-	    'key'          => '',
-	    'host'         => 'api.domaintools.com',
-	    'port'         => '80',
-	    'version'      => 'v1',
-	    'secure_auth'  => true,
-	    'return_type'  => 'json',
-	    'transport'    => 'curl',
-	    'content_type' => 'application/json'
-	  );
+	  if(!is_array($ini_resource) && file_exists($ini_resource)) {
+      $config = parse_ini_file($ini_resource);
+    }
+    elseif(is_array($ini_resource)) { 
+	    $config = $ini_resource;
+	  }
 	  
-	  $api                            = parse_ini_file(dirname(__FILE__).'/api.ini');
-	  if(empty($api))            $api = array();
-	  $api                            = array_merge($defaults, $api);
+	  $this->init($config);
+  }   
+  
+  /**
+   * Initialize the configuration Object
+   * @param $config - Associative array for configuration
+   */
+  private function init($config = array()) {
+ 	  $config                         = $this->validateParams($config);
 	  
-		$this->host 					          = $api['host'];
-		$this->port						          = $api['port'];
-		$this->subUrl					          = $api['version'];
-		$this->username					        = $api['username'];
-		$this->password					        = $api['key'];
-		$this->secureAuth               = $api['secure_auth'];
-		$this->returnType				        = $api['return_type'];
-		$this->contentType				      = $api['content_type'];
+		$this->host 					          = $config['host'];
+		$this->port						          = $config['port'];
+		$this->subUrl					          = $config['version'];
+		$this->username					        = $config['username'];
+		$this->password					        = $config['key'];
+		$this->secureAuth               = $config['secure_auth'];
+		$this->returnType				        = $config['return_type'];
+		$this->contentType				      = $config['content_type'];
 		
 		$this->baseUrl					        = $this->host.':'.$this->port.'/'.$this->subUrl;				
-		
-		
-		$class = ucfirst($api['transport']).'RestService';
 
-    try{
-      $this->transport              = RESTServiceAbstract::factory($class, array($this->contentType));
-    } catch(Exception $e){
-      $this->transport              = RESTServiceAbstract::factory(ucfirst($defaults['transport']).'RestService', array($this->contentType));
+    $className                      = ucfirst($config['transport']).'RestService';
+    $class                          = new ReflectionClass($className);
+    
+    if($class->implementsInterface('RestServiceInterface')) {
+      $this->transport              = RESTServiceAbstract::factory($className, array($this->contentType));
+    }
+    else {
+      $className                    = ucfirst($defaults['transport']).'RestService';
+      $this->transport              = RESTServiceAbstract::factory($className, array($this->contentType));
     }
 	}
 	
-	public function validateOptions(){
-	
-	}
-	
-	public function get($var){
+  /**
+   * Validate options from a given array 
+   * Merge with the default configuration
+   * @param $config - Associative array for configuration
+   * @return Same array cleaned up
+   */
+  private function validateParams($config) {
+
+    $defaults = array(
+      'username'     => '',
+      'key'          => '',
+      'host'         => 'api.domaintools.com',
+      'port'         => '80',
+      'version'      => 'v1',
+      'secure_auth'  => true,
+      'return_type'  => 'json',
+      'transport'    => 'curl',
+      'content_type' => 'application/json'
+    );
+    
+ 	  return array_merge($defaults, $config);
+  } 
+  	
+	public function get($var) {
 		return $this->$var;
 	}
 	
-	public function set($var,$val){
+	public function set($var,$val) {
 		$this->$var = $val;
 		return $this;
 	}	
 }
-?>

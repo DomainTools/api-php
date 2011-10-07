@@ -40,9 +40,7 @@ final class CurlRestService extends RESTServiceAbstract
 		    'CURLOPT_RETURNTRANSFER' => 1,
 		    'CURLOPT_TIMEOUT' => 10
 	    );
-	    
-	    $this->options = array_merge($defaults, $options);
-	    $this->contentType = $content_type;
+	    parent::__construct($content_type, array_merge($defaults, $options));
 	}
 	/*
 	 * SEND

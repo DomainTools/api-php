@@ -36,27 +36,36 @@ require_once("exceptions/BadRequestException.class.php");
  */
 class domaintoolsAPI{
 
-    /*
+    /**
      * Configuration (credentials, host,...)
      */
     private $configuration;
-	 /*
+    
+	  /**
      * Name of the service to call
      */
     private $serviceName;
+
     /**
      * Type of the return
      */
     private $returnType;
+
     /**
      * Url of the ressource to call
      */
     private $url;
+
     /**
      * An array of options
      */
     private $options;
 
+    /**
+     * Name of the domain to use
+     */
+    private $domainName;
+    
     /**
     * Array of domains/ips that can be called with no authentication or ip addresses restrictions
     * (ONLY for development usage; to test the API)
@@ -86,23 +95,22 @@ class domaintoolsAPI{
      * Construct of the class, init the service name, build the url and init options
      * @param $serviceName
      */
-    public function __construct($serviceName, $configuration=false){
-		  if(!$configuration) $configuration = new domaintoolsAPIConfiguration();
-  		$this->configuration = $configuration;
-      $this->serviceName = self::$mapServices[$serviceName];
-      $this->url = $this->configuration->get('baseUrl');
-      $this->options = array();
+    public function __construct($configuration=false){
+
+  		$this->configuration  = (empty($configuration))? new domaintoolsAPIConfiguration() : $configuration;
+      $this->serviceName    = self::$mapServices['domain-profile'];
+      $this->url            = $this->configuration->get('baseUrl');
+      $this->options         = array();
     }
 	
-	/**
-     * Specified the name of the service to call. Build an object domaintoolsAPI
-     * @param $serviceName name of the service
-	 * @param $configuration configuration object, if change needed from default settings
-     * @return this
-     */
-    public static function from($serviceName = '',$configuration=false){
-        $me = __CLASS__;
-        return new $me($serviceName,$configuration);
+   /**
+    * Specified the name of the service to call.
+    * @param $serviceName name of the service
+    * @return this
+    */
+    public function from($serviceName = ''){
+        $this->serviceName = self::$mapServices[$serviceName];
+        return $this;
     }
 
     /**
@@ -114,32 +122,42 @@ class domaintoolsAPI{
         $this->returnType = $returnType;
         return $this;
     }
-
+    
+    /**
+     * Set the domain name to use for the API request
+     * @param $domainName
+     * @return this
+     */
+    public function domain($domainName = '') {
+      $this->domainName = $domainName;
+      return $this;
+    }
+    
     /**
      * Make the request on the service, and return the response
-     * @param $domainName
-     * @param $decode not totally implements
      * @return the response of the service
      */
-    public function get($domainName = ''){
+    public function execute($debug = false) {
         $response = "";
         $this->options['format'] = $this->getReturnType();
-        $this->addCredentialsOptions($domainName);
-        $url = $this->buildUrl($domainName);
-        //print_r($this->options);die;
-        //die($url);
+        $this->addCredentialsOptions();
+        $url = $this->buildUrl();
+        if($debug) return $url;
         $response = $this->request($url);
 
         return $response;
+    }
+    
+    public function debug() {
+      return $this->execute(true);
     }
     /**
      * Add credentials to the Options array (if necessary).
      * First, we check if the domain name (or ip address) is authorized for a free testing of the API
      * If so, no credentials options will be added
      * If not, credentials are added
-     * @param $domainName
      */
-    public function addCredentialsOptions($domainName = ''){
+    public function addCredentialsOptions(){
     
       //if(in_array($domainName, self::$authorizedDomainsForTest)) return;
       
@@ -151,21 +169,20 @@ class domaintoolsAPI{
       
       if($this->configuration->get('secureAuth')){
         $timestamp                   = gmdate("Y-m-d\TH:i:s\Z");
-        $uri                         = '/'.$this->configuration->get('subUrl').(!empty($domainName)?'/'.$domainName.'/':'/').$this->serviceName;
+        $uri                         = '/'.$this->configuration->get('subUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName;
         $this->options['timestamp']  = $timestamp;
         $this->options['signature']  = hash_hmac('md5', $api_username . $timestamp . $uri, $api_key);
       }
     }
     /**
-     * Depending on the service name, we built the good url to request
-     * @param $domainName     
+     * Depending on the service name, we built the good url to request   
      * @return It returns the url
      */
-    public function buildUrl($domainName = ''){
+    public function buildUrl(){
       //allow access to multiple values for the same GET/POST parameter without the use of the brace ([]) notation
       $query_string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->options));
       
-      $url = $this->url.(!empty($domainName)?'/'.$domainName.'/':'/').$this->serviceName."?".$query_string;
+      $url = $this->url.(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName."?".$query_string;
       return $url;
     }
     
@@ -187,9 +204,13 @@ class domaintoolsAPI{
      */
     private function request($url){
       $transport = $this->configuration->get('transport');
+      
 		  try{
 			  $response = $transport->get($url);
+
 		  }catch(Exception $e){
+		    /*echo $e->getMessage();
+		    die($e->getTraceAsString());*/
 			  throw new ServiceUnavailableException();
 		  }
 		  
@@ -221,13 +242,21 @@ class domaintoolsAPI{
      * Getter of the return type
      * @return return type
      */
-    private function getReturnType(){
-        if($this->returnType != null){
-            $returnType = $this->returnType;
-        }else{
-            $returnType = $this->configuration->get('returnType');
-        }
-        return $returnType;
+    private function getReturnType() {
+      if($this->returnType != null){
+          $returnType = $this->returnType;
+      }else{
+          $returnType = $this->configuration->get('returnType');
+      }
+      return $returnType;
+    }
+    
+    /**
+     * Force The configuration to use a given transport
+     * @param RestServiceInterface $transport
+     */
+    public function setTransport(RestServiceInterface $transport) {
+      $this->configuration->set('transport',$transport);
     }
 }
 ?>
