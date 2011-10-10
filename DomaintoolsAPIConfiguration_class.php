@@ -115,7 +115,17 @@ class DomaintoolsAPIConfiguration {
       'content_type' => 'application/json'
     );
     
- 	  return array_merge($defaults, $config);
+    $config = array_merge($defaults, $config);
+    
+    if(empty($config['username'])) { 
+      throw new ServiceException('Username missing. Please set it in your api.ini');
+    }
+    
+    if(empty($config['key'])) { 
+      throw new ServiceException('Key missing. Please set it in your api.ini');
+    }
+
+ 	  return $config;
   } 
   	
 	public function get($var) {
