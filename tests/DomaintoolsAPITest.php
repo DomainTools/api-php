@@ -57,7 +57,7 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
         'username' => ''
       ));
     } catch (ServiceException $e) {
-      $this->assertTrue(true);
+      $this->assertTrue($e->getMessage() == ServiceException::EMPTY_API_USERNAME);
     }
   }
   
@@ -68,24 +68,35 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
     
     try {
       $configuration = new DomaintoolsAPIConfiguration(array(
+        'username' => 'krispouille',
         'key' => ''
       ));
     } catch (ServiceException $e) {
-      $this->assertTrue(true);
+      $this->assertTrue($e->getMessage() == ServiceException::EMPTY_API_KEY);
     }
   }
   
   /**
-   * Checks ServiceException raised when setting an empty serviceName
+   * Checks default ServiceName is taken when no serviceName given
    */
-  public function testServiceExceptionWhenSettingEmptyServiceName() {
+  public function testDefaultServiceCalledWhenEmptyServiceName() {
     
-    try {
-      $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
-      $request = new DomaintoolsAPI($configuration);
-      $request->from('');
-    } catch (ServiceException $e) {
-      $this->assertTrue(true);
-    }
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request = new DomaintoolsAPI($configuration);
+    $this->assertTrue($request->getDefaultServiceName() == $request->getServiceName());
   }
+
+  /**
+   * Checks ServiceException raised if invalid serviceName
+   */
+  public function testServiceExceptionIfInvalidServiceName() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request = new DomaintoolsAPI($configuration);
+    try {
+      $request->from('fakeService');
+    } catch (ServiceException $e) {
+      $this->assertTrue($e->getMessage() == ServiceException::UNKNOWN_SERVICE_NAME);
+    }
+  }  
 }

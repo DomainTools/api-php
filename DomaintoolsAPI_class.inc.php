@@ -46,32 +46,22 @@ class domaintoolsAPI{
      */
     private $serviceName;
 
-    /**
-     * Type of the return
+	  /**
+     * Default Name of the service (if none given)
      */
-    private $returnType;
-
-    /**
-     * Url of the ressource to call
+    private $defaultServiceName = 'domain-profile';
+        
+	  /**
+     * Representation of the service in the url to call
+     * In most of cases, serviceName = serviceUri
+     * @example for serviceName = "domain-profile", serviceUri = ""
+     * @example for serviceName = "whois-lookup",   serviceUri = "whois"
      */
-    private $url;
-
-    /**
-     * An array of options
-     */
-    private $options;
-
-    /**
-     * Name of the domain to use
-     */
-    private $domainName;
+    private $serviceUri;    
     
     /**
-    * Array of domains/ips that can be called with no authentication or ip addresses restrictions
-    * (ONLY for development usage; to test the API)
-    **/
-    private static $authorizedDomainsForTest = array("domaintools.com", "dailychanges.com", "nameintel.com", "reversewhois.com", "66.249.17.251");
-    
+     * Map table which associate serviceName to serviceUri
+     */
     private static $mapServices = array(
       ''                   => '',
       'domain-profile'     => '',
@@ -91,6 +81,33 @@ class domaintoolsAPI{
       'brand-alert'        => 'mark-alert',
       'registrant-alert'   => 'registrant-alert'
     );
+    
+    /**
+     * Type of the return
+     */
+    private $returnType;
+
+    /**
+     * Url of the resource to call
+     */
+    private $url;
+
+    /**
+     * An array of options
+     */
+    private $options;
+
+    /**
+     * Name of the domain to use
+     */
+    private $domainName;
+    
+    /**
+    * Array of domains/ips that can be called with no authentication or ip addresses restrictions
+    * (ONLY for development usage; to test the API)
+    **/
+    private static $authorizedDomainsForTest = array("domaintools.com", "dailychanges.com", "nameintel.com", "reversewhois.com", "66.249.17.251");
+    
     /**
      * Construct of the class, init the service name, build the url and init options
      * @param $serviceName
@@ -98,7 +115,9 @@ class domaintoolsAPI{
     public function __construct($configuration=false) {
 
   		$this->configuration  = (empty($configuration))? new domaintoolsAPIConfiguration() : $configuration;
-      $this->serviceName    = self::$mapServices['domain-profile'];
+  		
+      $this->serviceName    = $this->defaultServiceName;
+      $this->serviceUri     = self::$mapServices[$this->defaultServiceName];
       $this->url            = $this->configuration->get('baseUrl');
       $this->options         = array();
     }
@@ -109,7 +128,9 @@ class domaintoolsAPI{
     * @return this
     */
     public function from($serviceName = '') {
-        $this->serviceName = self::$mapServices[$serviceName];
+        if(!array_key_exists($serviceName, self::$mapServices)) throw new ServiceException(ServiceException::UNKNOWN_SERVICE_NAME);
+        $this->serviceName = $serviceName;
+        $this->serviceUri  = self::$mapServices[$serviceName];        
         return $this;
     }
 
@@ -169,7 +190,7 @@ class domaintoolsAPI{
       
       if($this->configuration->get('secureAuth')) {
         $timestamp                   = gmdate("Y-m-d\TH:i:s\Z");
-        $uri                         = '/'.$this->configuration->get('subUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName;
+        $uri                         = '/'.$this->configuration->get('subUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceUri;
         $this->options['timestamp']  = $timestamp;
         $this->options['signature']  = hash_hmac('md5', $api_username . $timestamp . $uri, $api_key);
       }
@@ -182,7 +203,7 @@ class domaintoolsAPI{
       //allow access to multiple values for the same GET/POST parameter without the use of the brace ([]) notation
       $query_string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->options));
       
-      $url = $this->url.(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName."?".$query_string;
+      $url = $this->url.(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceUri."?".$query_string;
       return $url;
     }
     
@@ -251,6 +272,33 @@ class domaintoolsAPI{
       return $returnType;
     }
     
+    /**
+     * Getter of the service name
+     * @return $serviceName
+     */
+    public function getServiceName() {
+      
+      return $this->serviceName;
+    }
+
+    /**
+     * Getter of the service uri
+     * @return $serviceUri
+     */    
+    public function getServiceUril() {
+      
+      return $this->serviceUri;
+    }
+    
+    /**
+     * Getter of the default service name
+     * @return $defaultServiceName
+     */    
+    public function getDefaultServiceName() {
+      
+      return $this->defaultServiceName;
+    }
+        
     /**
      * Force The configuration to use a given transport
      * @param RestServiceInterface $transport

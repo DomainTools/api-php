@@ -9,5 +9,10 @@
 * file that was distributed with this source code.
 */
 
-class ServiceException extends Exception{}
+class ServiceException extends Exception {
+  
+  const UNKNOWN_SERVICE_NAME = "Unknown service name";
+  const EMPTY_API_KEY        = "Empty API key";
+  const EMPTY_API_USERNAME   = "Empty API username";
+}
 ?>
