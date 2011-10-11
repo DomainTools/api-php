@@ -95,7 +95,7 @@ class domaintoolsAPI{
      * Construct of the class, init the service name, build the url and init options
      * @param $serviceName
      */
-    public function __construct($configuration=false){
+    public function __construct($configuration=false) {
 
   		$this->configuration  = (empty($configuration))? new domaintoolsAPIConfiguration() : $configuration;
       $this->serviceName    = self::$mapServices['domain-profile'];
@@ -108,7 +108,7 @@ class domaintoolsAPI{
     * @param $serviceName name of the service
     * @return this
     */
-    public function from($serviceName = ''){
+    public function from($serviceName = '') {
         $this->serviceName = self::$mapServices[$serviceName];
         return $this;
     }
@@ -118,7 +118,7 @@ class domaintoolsAPI{
      * @param $returnType return type (json, xml, html)
      * @return this
      */
-    public function withType($returnType){
+    public function withType($returnType) {
         $this->returnType = $returnType;
         return $this;
     }
@@ -157,7 +157,7 @@ class domaintoolsAPI{
      * If so, no credentials options will be added
      * If not, credentials are added
      */
-    public function addCredentialsOptions(){
+    public function addCredentialsOptions() {
     
       //if(in_array($domainName, self::$authorizedDomainsForTest)) return;
       
@@ -167,7 +167,7 @@ class domaintoolsAPI{
       $this->options['api_username'] = $api_username;
       $this->options['api_key']      = $api_key;
       
-      if($this->configuration->get('secureAuth')){
+      if($this->configuration->get('secureAuth')) {
         $timestamp                   = gmdate("Y-m-d\TH:i:s\Z");
         $uri                         = '/'.$this->configuration->get('subUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName;
         $this->options['timestamp']  = $timestamp;
@@ -178,7 +178,7 @@ class domaintoolsAPI{
      * Depending on the service name, we built the good url to request   
      * @return It returns the url
      */
-    public function buildUrl(){
+    public function buildUrl() {
       //allow access to multiple values for the same GET/POST parameter without the use of the brace ([]) notation
       $query_string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->options));
       
@@ -191,7 +191,7 @@ class domaintoolsAPI{
      * @param $options an array of options
      * @return this
      */
-    public function where($options){
+    public function where($options) {
         $this->options = array_merge($options, $this->options);
         return $this;
     }
@@ -202,7 +202,7 @@ class domaintoolsAPI{
      * @param $url url to call
      * @return response of the service
      */
-    private function request($url){
+    private function request($url) {
       $transport = $this->configuration->get('transport');
       
 		  try{

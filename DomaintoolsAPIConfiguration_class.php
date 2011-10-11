@@ -118,11 +118,11 @@ class DomaintoolsAPIConfiguration {
     $config = array_merge($defaults, $config);
     
     if(empty($config['username'])) { 
-      throw new ServiceException('Username missing. Please set it in your api.ini');
+      throw new ServiceException('Username missing. Must be set in your api.ini');
     }
     
     if(empty($config['key'])) { 
-      throw new ServiceException('Key missing. Please set it in your api.ini');
+      throw new ServiceException('Key missing. Must be set in your api.ini');
     }
 
  	  return $config;

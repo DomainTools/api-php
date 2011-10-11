@@ -74,4 +74,18 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
       $this->assertTrue(true);
     }
   }
+  
+  /**
+   * Checks ServiceException raised when setting an empty serviceName
+   */
+  public function testServiceExceptionWhenSettingEmptyServiceName() {
+    
+    try {
+      $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+      $request = new DomaintoolsAPI($configuration);
+      $request->from('');
+    } catch (ServiceException $e) {
+      $this->assertTrue(true);
+    }
+  }
 }
