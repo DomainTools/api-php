@@ -4,9 +4,9 @@ require '../DomaintoolsAPI_class.inc.php';
 
 $request = new DomaintoolsAPI();
 
-$request->from('domain-profile')
-        ->withType('xml')
-        ->domain('domaintools.com');
+$request->from('host-domains')
+        ->withType('json')
+        ->domain('66.249.17.251');
 
 $response = $request->execute();
 

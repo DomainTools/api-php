@@ -87,16 +87,44 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
   }
 
   /**
-   * Checks ServiceException raised if invalid serviceName
+   * Checks ServiceException raised if unknown serviceName
    */
-  public function testServiceExceptionIfInvalidServiceName() {
+  public function testServiceExceptionIfUnknownServiceName() {
     
     $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
     $request = new DomaintoolsAPI($configuration);
     try {
-      $request->from('fakeService');
+      $request->from('unknwonService');
     } catch (ServiceException $e) {
       $this->assertTrue($e->getMessage() == ServiceException::UNKNOWN_SERVICE_NAME);
     }
-  }  
+  }
+  
+  /**
+   * Checks ServiceException raised if unknown returnType
+   */
+  public function testServiceExceptionIfUnknownReturnType() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request = new DomaintoolsAPI($configuration);
+    try {
+      $request->withType('unknownType');
+    } catch (ServiceException $e) {
+      $this->assertTrue($e->getMessage() == ServiceException::UNKNOWN_RETURN_TYPE);
+    }
+  }
+  
+  /**
+   * Checks ServiceException raised if invalid domain
+   */
+  public function testServiceExceptionIfInvalidDomain() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request = new DomaintoolsAPI($configuration);
+    try {
+      $request->domain('invalidDomain');
+    } catch (ServiceException $e) {
+      $this->assertTrue($e->getMessage() == ServiceException::INVALID_DOMAIN);
+    }
+  }        
 }

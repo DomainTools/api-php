@@ -11,8 +11,11 @@
 
 class ServiceException extends Exception {
   
-  const UNKNOWN_SERVICE_NAME = "Unknown service name";
-  const EMPTY_API_KEY        = "Empty API key";
-  const EMPTY_API_USERNAME   = "Empty API username";
+  const UNKNOWN_SERVICE_NAME   = "Unknown service name";
+  const EMPTY_API_KEY          = "Empty API key";
+  const EMPTY_API_USERNAME     = "Empty API username";
+  const UNKNOWN_RETURN_TYPE    = "Unknown return type. (json or xml or html required)";
+  
+  const INVALID_DOMAIN         = "Domain/Ip invalide";
 }
 ?>

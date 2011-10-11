@@ -86,7 +86,12 @@ class domaintoolsAPI{
      * Type of the return
      */
     private $returnType;
-
+    
+    /**
+     * Authorized return types
+     */    
+    private static $authorizedReturnTypes = array('json', 'xml', 'html');
+    
     /**
      * Url of the resource to call
      */
@@ -119,7 +124,7 @@ class domaintoolsAPI{
       $this->serviceName    = $this->defaultServiceName;
       $this->serviceUri     = self::$mapServices[$this->defaultServiceName];
       $this->url            = $this->configuration->get('baseUrl');
-      $this->options         = array();
+      $this->options        = array();
     }
 	
    /**
@@ -128,7 +133,9 @@ class domaintoolsAPI{
     * @return this
     */
     public function from($serviceName = '') {
-        if(!array_key_exists($serviceName, self::$mapServices)) throw new ServiceException(ServiceException::UNKNOWN_SERVICE_NAME);
+        if(!array_key_exists($serviceName, self::$mapServices)) {
+          throw new ServiceException(ServiceException::UNKNOWN_SERVICE_NAME);
+        }
         $this->serviceName = $serviceName;
         $this->serviceUri  = self::$mapServices[$serviceName];        
         return $this;
@@ -140,20 +147,30 @@ class domaintoolsAPI{
      * @return this
      */
     public function withType($returnType) {
-        $this->returnType = $returnType;
-        return $this;
+      if(!in_array($returnType, self::$authorizedReturnTypes)) {
+        throw new ServiceException(ServiceException::UNKNOWN_RETURN_TYPE);
+      }
+      $this->returnType = $returnType;
+      return $this;
     }
     
     /**
      * Set the domain name to use for the API request
-     * @param $domainName
+     * @param $domainName (has to be an IP address OR a domain)
      * @return this
      */
     public function domain($domainName = '') {
+      // domainName has to be a valid Domain or a valid IP
+      if(!preg_match('#([a-zA-Z0-9][a-zA-Z0-9_-]*(?:.[a-zA-Z0-9][a-zA-Z0-9_-]*)+)#', $domainName) && 
+         !preg_match('#(?:\d{1,3}\.){3}\d{1,3}#', $domainName)) {
+         
+         throw new ServiceException(ServiceException::INVALID_DOMAIN); 
+      }
+        
       $this->domainName = $domainName;
       return $this;
     }
-    
+
     /**
      * Make the request on the service, and return the response
      * @return the response of the service
