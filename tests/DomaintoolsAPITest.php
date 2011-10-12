@@ -1,5 +1,5 @@
 <?php
-require 'DomaintoolsAPI_class.inc.php';
+require __DIR__.'/../DomaintoolsAPI_class.inc.php';
 
 class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
 {
@@ -21,7 +21,7 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
     $transport->expects($this->once())
           ->method('get')
           ->with($request->debug())
-          ->will($this->returnValue(file_get_contents('tests/fixtures/domain-profile/domaintools.com/good.json')));
+          ->will($this->returnValue(file_get_contents(__DIR__.'/fixtures/domain-profile/domaintools.com/good.json')));
     
     $request->setTransport($transport);
     try {
