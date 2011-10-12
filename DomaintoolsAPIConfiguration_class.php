@@ -47,15 +47,25 @@ class DomaintoolsAPIConfiguration {
 	 */
 	private $transport;
 	
+	/*
+	 * default config file path
+	 */
+	private $defaultConfigPath;
+	
 	/**
    * Construct of the class and initiliaze with default values
    * @param $serviceName
    */
 	public function __construct($ini_resource = '') {
-	
-	  if(empty($ini_resource)) $ini_resource = __DIR__.'/api.ini';
+	  
+	  $this->set('defaultConfigPath', __DIR__.'/api.ini');
+	  
+	  if(empty($ini_resource)) $ini_resource = $this->defaultConfigPath;
 
-	  if(!is_array($ini_resource) && file_exists($ini_resource)) {
+	  if(!is_array($ini_resource)) {
+	    if(!file_exists($ini_resource)) { 
+	      throw new ServiceException(ServiceException::INVALID_CONFIG_PATH);
+	    }
       $config = parse_ini_file($ini_resource);
     }
     elseif(is_array($ini_resource)) { 
@@ -70,6 +80,7 @@ class DomaintoolsAPIConfiguration {
    * @param $config - Associative array for configuration
    */
   private function init($config = array()) {
+  
  	  $config                         = $this->validateParams($config);
 	  
 		$this->host 					          = $config['host'];

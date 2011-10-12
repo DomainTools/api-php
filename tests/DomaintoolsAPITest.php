@@ -1,5 +1,5 @@
 <?php
-require '../DomaintoolsAPI_class.inc.php';
+require 'DomaintoolsAPI_class.inc.php';
 
 class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
 {
@@ -21,58 +21,13 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
     $transport->expects($this->once())
           ->method('get')
           ->with($request->debug())
-          ->will($this->returnValue(file_get_contents('fixtures/domain-profile/domaintools.com/good.json')));
+          ->will($this->returnValue(file_get_contents('tests/fixtures/domain-profile/domaintools.com/good.json')));
     
     $request->setTransport($transport);
     try {
       $response  = $request->execute();
     } catch(Exception $e) {
       return;
-    }
-  }
-  
-  /**
-   * Checks the (good) merging of default configuration with the user one
-   * If parameters are missing on the user configuration then default parameters complete the configuration
-   */
-  public function testMergeWithDefaultConfiguration() {
-  
-    $config = array(
-      'username' => 'krispouille', 
-      'key'      => 'password'
-    );
-    $configuration = new DomaintoolsAPIConfiguration($config);
-    
-    $this->assertTrue($configuration->get('username')==$config['username']);
-    $this->assertTrue($configuration->get('password')==$config['key']);
-  }
-   
-  /**
-   * Checks ServiceException raised if empty username
-   */
-  public function testServiceExceptionIfEmptyUsername() {
-    
-    try {
-      $configuration = new DomaintoolsAPIConfiguration(array(
-        'username' => ''
-      ));
-    } catch (ServiceException $e) {
-      $this->assertTrue($e->getMessage() == ServiceException::EMPTY_API_USERNAME);
-    }
-  }
-  
-  /**
-   * Checks ServiceException raised if empty key
-   */  
-  public function testServiceExceptionIfEmptyKey() {
-    
-    try {
-      $configuration = new DomaintoolsAPIConfiguration(array(
-        'username' => 'krispouille',
-        'key' => ''
-      ));
-    } catch (ServiceException $e) {
-      $this->assertTrue($e->getMessage() == ServiceException::EMPTY_API_KEY);
     }
   }
   
@@ -126,5 +81,39 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
     } catch (ServiceException $e) {
       $this->assertTrue($e->getMessage() == ServiceException::INVALID_DOMAIN);
     }
-  }        
+  } 
+  
+  /**
+   * Checks ServiceException raised if invalid options
+   */
+  public function testServiceExceptionIfInvalidOptions() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request = new DomaintoolsAPI($configuration);
+    try {
+      $request->where('invalidOptions');
+    } catch (ServiceException $e) {
+      $this->assertTrue($e->getMessage() == ServiceException::INVALID_OPTIONS);
+    }
+  }
+  
+  /**
+   * Checks username and key are (really) added to options
+   */
+  public function testAddCredentialsForUnsecureAuthentication() {
+    
+    $config = parse_ini_file(__DIR__.'/../api.ini');
+    $configuration = new DomaintoolsAPIConfiguration($config);
+    $configuration->set('secureAuth', false);
+
+    $request = new DomaintoolsAPI($configuration);    
+    $request->addCredentialsOptions();
+
+    $options = $request->getOptions();
+    
+    $this->assertTrue(
+      $config['username'] == $options['api_username'] &&
+      $config['key']      == $options['api_key']
+    );
+  }
 }

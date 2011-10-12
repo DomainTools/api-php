@@ -4,9 +4,10 @@ require '../DomaintoolsAPI_class.inc.php';
 
 $request = new DomaintoolsAPI();
 
-$request->from('host-domains')
+$request->from('registrant-alert')
         ->withType('json')
-        ->domain('66.249.17.251');
+        ->domain('66.249.17.251')
+        ->where(array('query' => 'domain tools'));
 
 $response = $request->execute();
 

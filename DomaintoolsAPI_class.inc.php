@@ -230,6 +230,7 @@ class domaintoolsAPI{
      * @return this
      */
     public function where($options) {
+        if(!is_array($options)) throw new ServiceException(ServiceException::INVALID_OPTIONS);
         $this->options = array_merge($options, $this->options);
         return $this;
     }
@@ -315,7 +316,15 @@ class domaintoolsAPI{
       
       return $this->defaultServiceName;
     }
-        
+    
+    /**
+     * Getter of the options
+     * @return Array $options
+     */    
+    public function getOptions() {
+      
+      return $this->options;
+    }       
     /**
      * Force The configuration to use a given transport
      * @param RestServiceInterface $transport
