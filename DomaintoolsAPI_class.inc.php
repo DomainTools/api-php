@@ -82,9 +82,14 @@ class domaintoolsAPI{
       'registrant-alert'   => 'registrant-alert'
     );
     
-    const DOMAIN_CALL = 1;
-    const IP_CALL     = 2;
-    const EMPTY_CALL  = 0;
+    
+    const IP_REGEX         = "#^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$#";
+    
+    const HOSTNAME_REGEX   = "#^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$#";
+    
+    const DOMAIN_CALL      = 1;
+    const IP_CALL          = 2;
+    const EMPTY_CALL       = 0;
     
     private static $mapServicesCalls = array(
       ''                   => self::DOMAIN_CALL,
@@ -180,11 +185,11 @@ class domaintoolsAPI{
      */
     public function domain($domainName = '') {
       // domainName has to be a valid Domain or a valid IP
-      if(!preg_match('#([a-zA-Z0-9][a-zA-Z0-9_-]*(?:.[a-zA-Z0-9][a-zA-Z0-9_-]*)+)#', $domainName) && 
-         !preg_match('#(?:\d{1,3}\.){3}\d{1,3}#', $domainName)) {
-         
+      
+      /*if(!preg_match(self::HOSTNAME_REGEX, $domainName) && 
+         !preg_match(self::IP_REGEX, $domainName)) {
          throw new ServiceException(ServiceException::INVALID_DOMAIN); 
-      }
+      }*/
         
       $this->domainName = $domainName;
       return $this;
@@ -216,11 +221,11 @@ class domaintoolsAPI{
      */
     private function validateSettings() {
     
-        $isIp     = preg_match('#(?:\d{1,3}\.){3}\d{1,3}#', $this->domainName);
-        $isDomain = preg_match('#([a-zA-Z0-9][a-zA-Z0-9_-]*(?:.[a-zA-Z0-9][a-zA-Z0-9_-]*)+)#', $this->domainName);
+        $isIp     = preg_match(self::IP_REGEX, $this->domainName);
+        $isDomain = preg_match(self::HOSTNAME_REGEX, $this->domainName);
         
         
-        if(self::$mapServicesCalls[$this->serviceUri] == self::DOMAIN_CALL && !$isIp && !$isDomain) {
+        if(self::$mapServicesCalls[$this->serviceUri] == self::DOMAIN_CALL && !$isDomain) {
           throw new ServiceException(ServiceException::DOMAIN_CALL_REQUIRED);
         }
         
@@ -231,8 +236,8 @@ class domaintoolsAPI{
         if(self::$mapServicesCalls[$this->serviceUri] == self::EMPTY_CALL && !empty($this->domainName)) {
           throw new ServiceException(ServiceException::EMPTY_CALL_REQUIRED);
         }
-
     }
+    
     /**
      * Add credentials to the Options array (if necessary).
      * First, we check if the domain name (or ip address) is authorized for a free testing of the API
@@ -295,8 +300,7 @@ class domaintoolsAPI{
 			  $response = $transport->get($this->url);
 
 		  }catch(Exception $e){
-		    /*echo $e->getMessage();
-		    die($e->getTraceAsString());*/
+		  
 			  throw new ServiceUnavailableException();
 		  }
 		  

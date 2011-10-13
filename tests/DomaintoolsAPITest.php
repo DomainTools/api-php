@@ -124,6 +124,7 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
     
     $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
     $request = new DomaintoolsAPI($configuration);
+    
     try {
       $request->from('domain-profile')
               ->domain('66.249.17.251')
