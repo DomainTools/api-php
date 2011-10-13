@@ -43,6 +43,11 @@ class DomaintoolsAPIConfiguration {
 	private $returnType;
 	
 	/*
+	 * transport type (curl, etc.)
+	 */
+	private $transportType;
+	
+	/*
 	 * Object in charge of calling the API
 	 */
 	private $transport;
@@ -52,6 +57,22 @@ class DomaintoolsAPIConfiguration {
 	 */
 	private $defaultConfigPath;
 	
+	/*
+	 * default configuration 
+	 * (that will be use to complete if necessary)
+	 */
+	private $defaultConfig = array(
+      'username'       => '',
+      'key'            => '',
+      'host'           => 'api.domaintools.com',
+      'port'           => '80',
+      'version'        => 'v1',
+      'secure_auth'    => true,
+      'return_type'    => 'json',
+      'transport_type' => 'curl',
+      'content_type'   => 'application/json'
+   );
+   
 	/**
    * Construct of the class and initiliaze with default values
    * @param $serviceName
@@ -91,19 +112,13 @@ class DomaintoolsAPIConfiguration {
 		$this->secureAuth               = $config['secure_auth'];
 		$this->returnType				        = $config['return_type'];
 		$this->contentType				      = $config['content_type'];
+		$this->transportType            = $config['transport_type'];
 		
 		$this->baseUrl					        = $this->host.':'.$this->port.'/'.$this->subUrl;				
 
-    $className                      = ucfirst($config['transport']).'RestService';
-    $class                          = new ReflectionClass($className);
-    
-    if($class->implementsInterface('RestServiceInterface')) {
-      $this->transport              = RESTServiceAbstract::factory($className, array($this->contentType));
-    }
-    else {
-      $className                    = ucfirst($defaults['transport']).'RestService';
-      $this->transport              = RESTServiceAbstract::factory($className, array($this->contentType));
-    }
+    $className                      = ucfirst($this->transportType).'RestService';
+    $this->transport                = RESTServiceAbstract::factory($className, array($this->contentType));
+
 	}
 	
   /**
@@ -113,27 +128,26 @@ class DomaintoolsAPIConfiguration {
    * @return Same array cleaned up
    */
   private function validateParams($config) {
-
-    $defaults = array(
-      'username'     => '',
-      'key'          => '',
-      'host'         => 'api.domaintools.com',
-      'port'         => '80',
-      'version'      => 'v1',
-      'secure_auth'  => true,
-      'return_type'  => 'json',
-      'transport'    => 'curl',
-      'content_type' => 'application/json'
-    );
     
-    $config = array_merge($defaults, $config);
+    $config = array_merge($this->defaultConfig, $config);
     
     if(empty($config['username'])) { 
       throw new ServiceException(ServiceException::EMPTY_API_USERNAME);
     }
     
-    if(empty($config['key'])) { 
+    if(empty($config['key'])) {
       throw new ServiceException(ServiceException::EMPTY_API_KEY);
+    }
+
+    try {
+      $class = new ReflectionClass($config['transport_type'].'RestService');
+    }
+    catch(ReflectionException $e) {
+      throw new ReflectionException(ServiceException::TRANSPORT_NOT_FOUND);
+    }
+    
+    if(!$class->implementsInterface('RestServiceInterface')) {
+      $config['transport_type'] = $this->defaultConfig['transport_type'];
     }
 
  	  return $config;

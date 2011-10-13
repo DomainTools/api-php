@@ -20,5 +20,7 @@ class ServiceException extends Exception {
   
   const INVALID_DOMAIN         = "Domain/Ip invalide";
   const INVALID_OPTIONS        = "Invalid options; options must be an array";
+  
+  const TRANSPORT_NOT_FOUND    = "Transport not found; it must refer to a class that implements RESTServiceInterface";
 }
 ?>

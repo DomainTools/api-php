@@ -34,7 +34,7 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase
   public function testMergeWithDefaultConfiguration() {
   
     $config = array(
-      'username' => 'krispouille', 
+      'username' => 'eurodns', 
       'key'      => 'password'
     );
     
@@ -65,12 +65,44 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase
     
     try {
       $configuration = new DomaintoolsAPIConfiguration(array(
-        'username' => 'krispouille',
+        'username' => 'eurodns',
         'key' => ''
       ));
     } catch (ServiceException $e) {
       $this->assertTrue($e->getMessage() == ServiceException::EMPTY_API_KEY);
     }
   }
-      
+  /**
+   * Checks the default transport is called if an invalid one is given
+   */
+  public function testDefaultTransportCalledIfCurrentOneNotValid() {
+  
+    include __DIR__.'/fixtures/FakeRestService.php';
+    
+    $configuration = new DomaintoolsAPIConfiguration(array(
+      'username'       => 'eurodns',
+      'key'            => 'password',
+      'transport_type' => 'fake'
+    ));
+    
+    $defaultConfig = $configuration->get('defaultConfig');
+    $this->assertTrue($defaultConfig['transport_type'] == $configuration->get('transportType'));
+  }
+  
+  
+  /**
+   * Checks ServiceException raised if empty username
+   */
+  public function testServiceExceptionIfTransportNotFound() {
+    
+    try {
+      $configuration = new DomaintoolsAPIConfiguration(array(
+        'username'       => 'eurodns',
+        'key'            => 'password',
+        'transport_type' => 'fake'
+      ));
+    } catch (ReflectionException $e) {
+      $this->assertTrue($e->getMessage() == ServiceException::TRANSPORT_NOT_FOUND);
+    }
+  }   
 }
