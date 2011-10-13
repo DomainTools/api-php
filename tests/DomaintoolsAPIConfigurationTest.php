@@ -91,15 +91,15 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase
   
   
   /**
-   * Checks ServiceException raised if empty username
+   * Checks ReflectionException raised if transport not found
    */
-  public function testServiceExceptionIfTransportNotFound() {
+  public function testReflectionExceptionIfTransportNotFound() {
     
     try {
       $configuration = new DomaintoolsAPIConfiguration(array(
         'username'       => 'eurodns',
         'key'            => 'password',
-        'transport_type' => 'fake'
+        'transport_type' => 'bad'
       ));
     } catch (ReflectionException $e) {
       $this->assertTrue($e->getMessage() == ServiceException::TRANSPORT_NOT_FOUND);

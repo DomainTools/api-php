@@ -116,4 +116,52 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
       $config['key']      == $options['api_key']
     );
   }
+  
+  /**
+   * Checks ServiceException raised if domain call required
+   */
+  public function testServiceExceptionIfDomainCallRequired() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request = new DomaintoolsAPI($configuration);
+    try {
+      $request->from('domain-profile')
+              ->domain('66.249.17.251')
+              ->execute();
+    } catch (ServiceException $e) {
+      $this->assertTrue($e->getMessage() == ServiceException::DOMAIN_CALL_REQUIRED);
+    }
+  }
+  
+  /**
+   * Checks ServiceException raised if ip call required
+   */
+  public function testServiceExceptionIfIpCallRequired() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request = new DomaintoolsAPI($configuration);
+    try {
+      $request->from('host-domains')
+              ->domain('domaintools.com')
+              ->execute();
+    } catch (ServiceException $e) {
+      $this->assertTrue($e->getMessage() == ServiceException::IP_CALL_REQUIRED);
+    }
+  }
+  
+  /**
+   * Checks ServiceException raised if empty call required
+   */
+  public function testServiceExceptionIfEmptyCallRequired() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request = new DomaintoolsAPI($configuration);
+    try {
+      $request->from('registrant-alert')
+              ->domain('domaintools.com')
+              ->execute();
+    } catch (ServiceException $e) {
+      $this->assertTrue($e->getMessage() == ServiceException::EMPTY_CALL_REQUIRED);
+    }
+  }        
 }

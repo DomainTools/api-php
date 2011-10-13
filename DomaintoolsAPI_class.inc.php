@@ -58,7 +58,7 @@ class domaintoolsAPI{
      * @example for serviceName = "whois-lookup",   serviceUri = "whois"
      */
     private $serviceUri;    
-    
+
     /**
      * Map table which associate serviceName to serviceUri
      */
@@ -82,6 +82,26 @@ class domaintoolsAPI{
       'registrant-alert'   => 'registrant-alert'
     );
     
+    const DOMAIN_CALL = 1;
+    const IP_CALL     = 2;
+    const EMPTY_CALL  = 0;
+    
+    private static $mapServicesCalls = array(
+      ''                   => self::DOMAIN_CALL,
+      'whois'              => self::DOMAIN_CALL,
+      'whois/history'      => self::DOMAIN_CALL,
+      'hosting-history'    => self::DOMAIN_CALL,
+      'reverse-ip'         => self::DOMAIN_CALL,
+      'host-domains'       => self::IP_CALL,
+      'name-server-domains'=> self::EMPTY_CALL,
+      'reverse-whois'      => self::EMPTY_CALL,
+      'domain-suggestions' => self::EMPTY_CALL,
+      'domain-search'      => self::EMPTY_CALL,
+      'mark-alert'         => self::EMPTY_CALL,
+      'brand-alert'        => self::EMPTY_CALL,
+      'registrant-alert'   => self::EMPTY_CALL
+    );
+
     /**
      * Type of the return
      */
@@ -123,7 +143,6 @@ class domaintoolsAPI{
   		
       $this->serviceName    = $this->defaultServiceName;
       $this->serviceUri     = self::$mapServices[$this->defaultServiceName];
-      $this->url            = $this->configuration->get('baseUrl');
       $this->options        = array();
     }
 	
@@ -176,18 +195,43 @@ class domaintoolsAPI{
      * @return the response of the service
      */
     public function execute($debug = false) {
+    
         $response = "";
-        $this->options['format'] = $this->getReturnType();
-        $this->addCredentialsOptions();
-        $url = $this->buildUrl();
-        if($debug) return $url;
-        $response = $this->request($url);
+
+        $this->buildOptions();
+        $this->validateSettings();
+        $this->buildUrl();
+        if($debug) return $this->url;
+        $response = $this->request();
 
         return $response;
     }
     
     public function debug() {
       return $this->execute(true);
+    }
+    
+    /*
+     * Checks all the settings are good before calling the request
+     */
+    private function validateSettings() {
+    
+        $isIp     = preg_match('#(?:\d{1,3}\.){3}\d{1,3}#', $this->domainName);
+        $isDomain = preg_match('#([a-zA-Z0-9][a-zA-Z0-9_-]*(?:.[a-zA-Z0-9][a-zA-Z0-9_-]*)+)#', $this->domainName);
+        
+        
+        if(self::$mapServicesCalls[$this->serviceUri] == self::DOMAIN_CALL && !$isIp && !$isDomain) {
+          throw new ServiceException(ServiceException::DOMAIN_CALL_REQUIRED);
+        }
+        
+        if(self::$mapServicesCalls[$this->serviceUri] == self::IP_CALL && !$isIp) {
+          throw new ServiceException(ServiceException::IP_CALL_REQUIRED);
+        }
+        
+        if(self::$mapServicesCalls[$this->serviceUri] == self::EMPTY_CALL && !empty($this->domainName)) {
+          throw new ServiceException(ServiceException::EMPTY_CALL_REQUIRED);
+        }
+
     }
     /**
      * Add credentials to the Options array (if necessary).
@@ -212,18 +256,22 @@ class domaintoolsAPI{
         $this->options['signature']  = hash_hmac('md5', $api_username . $timestamp . $uri, $api_key);
       }
     }
+    
+    public function buildOptions() {
+      $this->options['format'] = $this->getReturnType();
+      $this->addCredentialsOptions();
+    }
+
     /**
      * Depending on the service name, we built the good url to request   
-     * @return It returns the url
      */
     public function buildUrl() {
       //allow access to multiple values for the same GET/POST parameter without the use of the brace ([]) notation
       $query_string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->options));
       
-      $url = $this->url.(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceUri."?".$query_string;
-      return $url;
+      $this->url = $this->configuration->get('baseUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceUri."?".$query_string;
     }
-    
+
     /**
      * This function allows you to specify an array of options
      * @param $options an array of options
@@ -238,14 +286,13 @@ class domaintoolsAPI{
     /**
      * Make a curl request on the service, and return the response if the http status code is 200,
      * else return an exception.
-     * @param $url url to call
      * @return response of the service
      */
-    private function request($url) {
+    private function request() {
       $transport = $this->configuration->get('transport');
       
 		  try{
-			  $response = $transport->get($url);
+			  $response = $transport->get($this->url);
 
 		  }catch(Exception $e){
 		    /*echo $e->getMessage();
