@@ -110,7 +110,7 @@ class domaintoolsAPI{
     /**
      * Type of the return
      */
-    private $returnType;
+    private $returnType = 'object';
     
     /**
      * Authorized return types
@@ -201,15 +201,17 @@ class domaintoolsAPI{
      */
     public function execute($debug = false) {
     
-        $response = "";
+        $rawResponse = "";
 
         $this->buildOptions();
         $this->validateSettings();
         $this->buildUrl();
         if($debug) return $this->url;
-        $response = $this->request();
+        $rawResponse = $this->request();
+        
+        $response = DomaintoolsAPIResponse::factory($this->getReturnType(), $rawResponse);
 
-        return $response;
+        return $response->getContent();
     }
     
     public function debug() {
