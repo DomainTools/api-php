@@ -12,7 +12,7 @@
 require("DomaintoolsAPIConfiguration.class.php");
 require_once("DomaintoolsAPIResponse.class.php");
 
-require("lib/REST_Service/curl_rest_service_class.inc.php");
+require_once("lib/REST_Service/curl_rest_service_class.inc.php");
 require_once("exceptions/ServiceException.class.php");
 require_once("exceptions/ServiceUnavailableException.class.php");
 require_once("exceptions/NotFoundException.class.php");

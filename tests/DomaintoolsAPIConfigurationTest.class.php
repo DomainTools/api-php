@@ -1,5 +1,7 @@
 <?php
 
+require __DIR__.'/../DomaintoolsAPIConfiguration.class.php';
+
 class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase
 {
   /**
@@ -8,7 +10,7 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase
    */
   public function testDefaultConfigCalledIfNoneGiven() {
   
-    $defaultConfigPath = realpath("api.ini");
+    $defaultConfigPath = realpath(__DIR__."/../api.ini");
     $configuration = new DomaintoolsAPIConfiguration();
     
     $this->assertTrue($defaultConfigPath == $configuration->get('defaultConfigPath'));

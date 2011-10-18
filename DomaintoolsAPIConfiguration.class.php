@@ -7,57 +7,68 @@
 * For the full copyright and license information, please view the LICENSE
 * file that was distributed with this source code.
 */
+
+require_once("lib/REST_Service/curl_rest_service_class.inc.php");
+require_once("exceptions/ServiceException.class.php");
+
 class DomaintoolsAPIConfiguration {
 
-	/*
+	/**
 	 * Server Host
 	 */
 	private $host;
-	/*
+	
+	/**
 	 * Server Port
 	 */
 	private $port;
-	/*
+	
+	/**
 	 * Sub URL (version)
 	 */
 	private $subUrl;
-	/*
+	
+	/**
 	 * Complete URL
 	 */
 	private $baseUrl;
-	/*
+	
+	/**
 	 * Domaintools API Username
 	 */
 	private $username;
-	/*
+	
+	/**
 	 * Domaintools API Password
 	 */
 	private $password;
-	/*
+	
+	/**
 	 * (Boolean) force to secure authentication
 	 */
-	private $secureAuth;	
-	/*
+	private $secureAuth;
+	
+	/**
 	 * Default return type (json/xml/html)
 	 */
 	private $returnType;
 	
-	/*
+	/**
 	 * transport type (curl, etc.)
 	 */
 	private $transportType;
 	
-	/*
+	/**
 	 * Object in charge of calling the API
 	 */
 	private $transport;
 	
-	/*
+	/**
 	 * default config file path
 	 */
 	private $defaultConfigPath;
 	
-	/*
+	/**
 	 * default configuration 
 	 * (that will be use to complete if necessary)
 	 */
@@ -74,12 +85,12 @@ class DomaintoolsAPIConfiguration {
    );
    
 	/**
-   * Construct of the class and initiliaze with default values
-   * @param $serviceName
+   * Construct of the class and initiliaze with default values (if no config given)
+   * @param mixed $ini_resource
    */
 	public function __construct($ini_resource = '') {
 	  
-	  $this->set('defaultConfigPath', __DIR__.'/api.ini');
+	  $this->defaultConfigPath = __DIR__.'/api.ini';
 	  
 	  if(empty($ini_resource)) $ini_resource = $this->defaultConfigPath;
 
@@ -92,13 +103,12 @@ class DomaintoolsAPIConfiguration {
     elseif(is_array($ini_resource)) { 
 	    $config = $ini_resource;
 	  }
-	  
 	  $this->init($config);
   }   
   
   /**
    * Initialize the configuration Object
-   * @param $config - Associative array for configuration
+   * @param array $config - Associative array for configuration
    */
   private function init($config = array()) {
   
@@ -124,8 +134,8 @@ class DomaintoolsAPIConfiguration {
   /**
    * Validate options from a given array 
    * Merge with the default configuration
-   * @param $config - Associative array for configuration
-   * @return Same array cleaned up
+   * @param array $config - Associative array for configuration
+   * @return array $config cleaned up
    */
   private function validateParams($config) {
     

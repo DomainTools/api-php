@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../DomaintoolsAPI_class.inc.php';
+require __DIR__.'/../DomaintoolsAPI.class.php';
 
 class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
 {
