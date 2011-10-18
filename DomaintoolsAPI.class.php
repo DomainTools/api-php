@@ -1,15 +1,17 @@
 <?php
 
-/*
-* This file is part of the domaintoolsAPI_php_wrapper package.
-*
-* Copyright (C) 2011 by domaintools.com - EuroDNS S.A. 
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * This file is part of the domaintoolsAPI_php_wrapper package.
+ *
+ * Copyright (C) 2011 by domaintools.com - EuroDNS S.A. 
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-require("DomaintoolsAPIConfiguration_class.php");
+require("DomaintoolsAPIConfiguration.class.php");
+require_once("DomaintoolsAPIResponse.class.php");
+
 require("lib/REST_Service/curl_rest_service_class.inc.php");
 require_once("exceptions/ServiceException.class.php");
 require_once("exceptions/ServiceUnavailableException.class.php");
@@ -18,23 +20,42 @@ require_once("exceptions/NotAuthorizedException.class.php");
 require_once("exceptions/InternalServerErrorException.class.php");
 require_once("exceptions/BadRequestException.class.php");
 
-/*
- * This class allow to call any service of the domaintoolsAPI
- * Example of call with default values :
-	$response = domaintoolsAPI::from("info")->
-							withType("json")->
-							get("example.com");
+/**
+  This class allow to call any service of the domaintoolsAPI
+  @example of call with default values :
+	$request = new DomaintoolsAPI();
+  $request->from("whois")
+	        ->withType("xml")
+		      ->domain("example.com");
+		      
+  $xmlResponse = $request->execute();
 							 
 							 
- * Example of call with somes settings changes on the fly :
+  @example of call with somes settings changes on the fly :
 	$configuration = new domaintoolsAPIConfiguration();
-	$configuration->set('username','anotherUsername')->
-					set('password','anotherPassword');
-	$response = domaintoolsAPI::from("info",$configuration)->
-							withType("json")->
-							get("example.com");
+	$configuration->set('username','anotherUsername')
+					      ->set('password','anotherPassword');
+					      
+	$request = new DomaintoolsAPI($configuration);
+  $request->from("whois")
+          ->withType("json")
+					->domain("example.com");
+					
+  $jsonResponse = $request->execute():
+  
+  @example of call returning a DomaintoolsResponse Object :
+
+  $request = new DomaintoolsAPI();
+  $request->from('whois')
+          ->domain('domaintools.com');
+          
+  $response = $request->execute();
+  
+  $jsonResponse = $response->toJson();
+  $xmlResponse = $response->toXml();  
+  
  */
-class domaintoolsAPI{
+class domaintoolsAPI {
 
     /**
      * Configuration (credentials, host,...)
@@ -82,15 +103,31 @@ class domaintoolsAPI{
       'registrant-alert'   => 'registrant-alert'
     );
     
-    
+    /**
+     * regex to validate an ip
+     */
     const IP_REGEX         = "#^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$#";
     
+    /**
+     * regex to validate a hostname
+     */
     const HOSTNAME_REGEX   = "#^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$#";
     
+    /**
+     * A call with a domain
+     */
     const DOMAIN_CALL      = 1;
+    /**
+     * A call with an ip address
+     */    
     const IP_CALL          = 2;
+    /**
+     * A call with no domain and no ip address
+     */    
     const EMPTY_CALL       = 0;
-    
+    /**
+     * For a given service (key), we have call ($value)
+     */
     private static $mapServicesCalls = array(
       ''                   => self::DOMAIN_CALL,
       'whois'              => self::DOMAIN_CALL,
@@ -110,7 +147,7 @@ class domaintoolsAPI{
     /**
      * Type of the return
      */
-    private $returnType = 'object';
+    private $returnType = null;
     
     /**
      * Authorized return types
@@ -139,8 +176,8 @@ class domaintoolsAPI{
     private static $authorizedDomainsForTest = array("domaintools.com", "dailychanges.com", "nameintel.com", "reversewhois.com", "66.249.17.251");
     
     /**
-     * Construct of the class, init the service name, build the url and init options
-     * @param $serviceName
+     * Construct of the class with an optional given configuration object
+     * @param DomaintoolsConfigurationAPI $configuration
      */
     public function __construct($configuration=false) {
 
@@ -152,9 +189,9 @@ class domaintoolsAPI{
     }
 	
    /**
-    * Specified the name of the service to call.
-    * @param $serviceName name of the service
-    * @return this
+    * Specifies the name of the service to call.
+    * @param string $serviceName name of the service
+    * @return DomaintoolsAPI $this
     */
     public function from($serviceName = '') {
         if(!array_key_exists($serviceName, self::$mapServices)) {
@@ -167,8 +204,8 @@ class domaintoolsAPI{
 
     /**
      * This function allows you to specify the return type of the service
-     * @param $returnType return type (json, xml, html)
-     * @return this
+     * @param string $returnType (json, xml, html)
+     * @return DomaintoolsAPI $this
      */
     public function withType($returnType) {
       if(!in_array($returnType, self::$authorizedReturnTypes)) {
@@ -180,8 +217,9 @@ class domaintoolsAPI{
     
     /**
      * Set the domain name to use for the API request
-     * @param $domainName (has to be an IP address OR a domain)
-     * @return this
+     * @param string $domainName (has to be an IP address OR a domain)
+     * @return DomaintoolsAPI $this
+     * @todo check we have a valid domain
      */
     public function domain($domainName = '') {
       // domainName has to be a valid Domain or a valid IP
@@ -197,29 +235,34 @@ class domaintoolsAPI{
 
     /**
      * Make the request on the service, and return the response
-     * @return the response of the service
+     * @return string $rawResponse (if a returnType is specified)
+     * @return DomaintoolsAPIResponse $response (if no returnType is specified)
      */
     public function execute($debug = false) {
     
         $rawResponse = "";
-
         $this->buildOptions();
         $this->validateSettings();
         $this->buildUrl();
-        if($debug) return $this->url;
-        $rawResponse = $this->request();
         
-        $response = DomaintoolsAPIResponse::factory($this->getReturnType(), $rawResponse);
+        if($debug) return $this->url;
+          
+        $rawResponse = $this->request();
 
-        return $response->getContent();
+        if(empty($this->returnType)) {
+          return new DomaintoolsAPIResponse($this);
+        }
+
+        return $rawResponse;
     }
     
     public function debug() {
       return $this->execute(true);
     }
     
-    /*
+    /**
      * Checks all the settings are good before calling the request
+     * Checks if a service required a domain, an ip, or nothing
      */
     private function validateSettings() {
     
@@ -270,7 +313,7 @@ class domaintoolsAPI{
     }
 
     /**
-     * Depending on the service name, we built the good url to request   
+     * Depending on the service name, and the options we built the good url to request   
      */
     public function buildUrl() {
       //allow access to multiple values for the same GET/POST parameter without the use of the brace ([]) notation
@@ -281,8 +324,8 @@ class domaintoolsAPI{
 
     /**
      * This function allows you to specify an array of options
-     * @param $options an array of options
-     * @return this
+     * @param array $options an array of options
+     * @return DomaintoolsAPI $this
      */
     public function where($options) {
         if(!is_array($options)) throw new ServiceException(ServiceException::INVALID_OPTIONS);
@@ -293,7 +336,7 @@ class domaintoolsAPI{
     /**
      * Make a curl request on the service, and return the response if the http status code is 200,
      * else return an exception.
-     * @return response of the service
+     * @return string|DomaintoolsAPI response of the service
      */
     private function request() {
       $transport = $this->configuration->get('transport');
@@ -332,7 +375,7 @@ class domaintoolsAPI{
 
     /**
      * Getter of the return type
-     * @return return type
+     * @return string $returnType
      */
     private function getReturnType() {
       if($this->returnType != null){
@@ -345,7 +388,7 @@ class domaintoolsAPI{
     
     /**
      * Getter of the service name
-     * @return $serviceName
+     * @return string $this->serviceName
      */
     public function getServiceName() {
       
@@ -354,7 +397,7 @@ class domaintoolsAPI{
 
     /**
      * Getter of the service uri
-     * @return $serviceUri
+     * @return string  $this->serviceUri
      */    
     public function getServiceUril() {
       
@@ -363,7 +406,7 @@ class domaintoolsAPI{
     
     /**
      * Getter of the default service name
-     * @return $defaultServiceName
+     * @return string $this->defaultServiceName
      */    
     public function getDefaultServiceName() {
       
@@ -372,7 +415,7 @@ class domaintoolsAPI{
     
     /**
      * Getter of the options
-     * @return Array $options
+     * @return array $this->options
      */    
     public function getOptions() {
       
