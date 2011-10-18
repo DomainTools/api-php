@@ -64,5 +64,12 @@ interface RESTServiceInterface
 	 * Converts the request connection to a transparent TCP/IP tunnel,
 	 */
 	public function connect($url);
+	
+	/*************** ADDITIONAL METHODS ***********************/
+	
+	/**
+	 * Returns the status of a request
+	 */
+	public function getStatus();
 }
 ?>

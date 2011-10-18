@@ -25,41 +25,23 @@ final class CurlRestService extends RESTServiceAbstract
     private $lastInfo;
     
 	/*
-	 * OPTIONARR
+	 * options
 	 * Default CURL options
 	 */
-	private $optionArr = array
-	(
-		'CURLOPT_CUSTOM_HTTPHEADER' => '',
-		'CURLOPT_CUSTOM_RAWDATA' => '',
-		'CURLOPT_HEADER' => 0,
-		'CURLOPT_USERAGENT' => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
-		'CURLOPT_VERBOSE' => 0,
-		'CURLOPT_FOLLOWLOCATION' => 0,
-		'CURLOPT_RETURNTRANSFER' => 1
-	);			 
-	 
-	/*
-	 * SETOPTION
-	 * Set a specific CURL option
-	 */
-	public function setOption ($key, $value)
+	public function __construct($content_type, $options = array())
 	{
-		$this->optionArr[$key] = $value;
+	    $defaults = array(
+		    'CURLOPT_CUSTOM_HTTPHEADER' => '',
+		    'CURLOPT_CUSTOM_RAWDATA' => '',
+		    'CURLOPT_HEADER' => 0,
+		    'CURLOPT_USERAGENT' => 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)',
+		    'CURLOPT_VERBOSE' => 0,
+		    'CURLOPT_FOLLOWLOCATION' => 0,
+		    'CURLOPT_RETURNTRANSFER' => 1,
+		    'CURLOPT_TIMEOUT' => 10
+	    );
+	    parent::__construct($content_type, array_merge($defaults, $options));
 	}
-	
-	/*
-	 * DROPOPTION
-	 * Drop a specific CURL option
-	 */
-	public function dropOption ($key)
-	{
-		if (isset ($this->optionArr[$key]))
-		{
-			unset($this->optionArr[$key]);
-		}
-	}	
-	
 	/*
 	 * SEND
 	 * Generic method to send requests to a specific URL
@@ -73,7 +55,7 @@ final class CurlRestService extends RESTServiceAbstract
 		
 		curl_setopt($cUrl, CURLOPT_URL, $url);
 		curl_setopt($cUrl, CURLOPT_CUSTOMREQUEST, $method);
-		foreach ($this->optionArr AS $constant => $value)
+		foreach ($this->options AS $constant => $value)
 		{
 			if (defined ($constant))
 			{
@@ -85,7 +67,7 @@ final class CurlRestService extends RESTServiceAbstract
 		{
 			$data = '';
 			
-			if (! empty ($this->optionArr['CURLOPT_CUSTOM_RAWDATA']) AND $this->optionArr['CURLOPT_CUSTOM_RAWDATA'] == true)
+			if (! empty ($this->options['CURLOPT_CUSTOM_RAWDATA']) AND $this->options['CURLOPT_CUSTOM_RAWDATA'] == true)
 			{
 				$data = http_build_query($dataArr);
 			}
@@ -97,9 +79,9 @@ final class CurlRestService extends RESTServiceAbstract
 				}			
 			}
 			
-			if ( ! empty ($this->optionArr['CURLOPT_CUSTOM_HTTPHEADER']))
+			if ( ! empty ($this->options['CURLOPT_CUSTOM_HTTPHEADER']))
 			{			
-				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array($this->optionArr['CURLOPT_CUSTOM_HTTPHEADER'] ,'Content-Length: '.strlen($data)));
+				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array($this->options['CURLOPT_CUSTOM_HTTPHEADER'] ,'Content-Length: '.strlen($data)));
 			}
 			else
 			{
@@ -110,10 +92,10 @@ final class CurlRestService extends RESTServiceAbstract
 		if (in_array(strtoupper($method), array('POST','PUT')) AND !is_array ($dataArr)) {
 		    
 		    $data = $dataArr ; 
-			if ( ! empty ($this->optionArr['CURLOPT_CUSTOM_HTTPHEADER']))
+			if ( ! empty ($this->options['CURLOPT_CUSTOM_HTTPHEADER']))
 			{
 			    
-				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array($this->optionArr['CURLOPT_CUSTOM_HTTPHEADER'] ,'Content-Length: '.strlen($data)));
+				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array($this->options['CURLOPT_CUSTOM_HTTPHEADER'] ,'Content-Length: '.strlen($data)));
 			}
 			else
 			{ 
@@ -135,6 +117,10 @@ final class CurlRestService extends RESTServiceAbstract
 	
 	public function getInfo(){
 	    return $this->lastInfo;
+	}
+	
+	public function getStatus(){
+	  return $this->lastInfo['http_code'];
 	}
 }
 

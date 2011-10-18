@@ -1,5 +1,14 @@
 ; Rename this file to api.ini
 ; Fill these entries with your credentials
 
-username = 'your_api_username'
-key      = 'your_api_key'
+username       = 'your_api_username'
+key            = 'your_api_key'
+
+; NO NEED TO EDIT BELOW
+host           = 'api.domaintools.com'
+port           = '80'
+version        = 'v1'
+secure_auth    = true
+return_type    = 'json'
+transport_type = 'curl'
+content_type   = 'application/json'

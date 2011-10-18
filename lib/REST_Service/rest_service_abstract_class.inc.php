@@ -17,6 +17,24 @@ require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'rest_service_interface_class
   */
 abstract class RESTServiceAbstract implements RESTServiceInterface
 {
+  protected $options;
+  protected $contentType;
+  
+  public function __construct($content_type, $options = array())
+  {
+    $this->options      = $options;
+    $this->contentType  = $content_type;
+  }  
+	/*
+	 * FACTORY
+	 * Return an instance of a transport class
+	 */	
+	public static function factory($className, $params = array())
+	{
+	  $reflection_class = new ReflectionClass($className);
+    return $reflection_class->newInstanceArgs($params);
+	}
+	  
 	/*
 	 * SEND
 	 * Generic method to send requests to a specific URL
@@ -97,6 +115,27 @@ abstract class RESTServiceAbstract implements RESTServiceInterface
 	{
 		return $this->send('CONNECT', $url);
 	}	
+	
+	/*
+	 * SETOPTION
+	 * Set a specific CURL option
+	 */
+	public function setOption ($key, $value)
+	{
+		$this->options[$key] = $value;
+	}
+	
+	/*
+	 * DROPOPTION
+	 * Drop a specific CURL option
+	 */
+	public function dropOption ($key)
+	{
+		if (isset ($this->options[$key]))
+		{
+			unset($this->options[$key]);
+		}
+	}
 }
 
 ?>
