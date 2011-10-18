@@ -243,15 +243,22 @@ class domaintoolsAPI {
         $rawResponse = "";
         $this->buildOptions();
         $this->validateSettings();
+        
+        if(empty($this->returnType)) {
+          $this->options['format'] = 'json';
+        }
+        
         $this->buildUrl();
         
-        if($debug) return $this->url;
-          
-        $rawResponse = $this->request();
-
-        if(empty($this->returnType)) {
-          return new DomaintoolsAPIResponse($this);
+        if($debug) {
+          return $this->url;
         }
+        
+        $rawResponse = $this->request();
+        
+        if(empty($this->returnType)) {
+          return new DomaintoolsAPIResponse($this, $rawResponse);
+        }  
 
         return $rawResponse;
     }
@@ -331,6 +338,12 @@ class domaintoolsAPI {
         if(!is_array($options)) throw new ServiceException(ServiceException::INVALID_OPTIONS);
         $this->options = array_merge($options, $this->options);
         return $this;
+    }
+    
+    public function query($query) {
+      return $this->where(
+        array('query' => $query)
+      );
     }
 
     /**

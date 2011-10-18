@@ -13,16 +13,16 @@
 
   // configure the request
   $request      = new DomaintoolsAPI();
-  $request->from('whois')
-          ->withType('json')
-          ->domain('domaintools.com');
+  $response     = $request->from('whois')
+                          ->domain('domaintools.com')
+                          ->execute();
 
   // send request to the response object
   $response     = new DomaintoolsAPIResponse($request);
   
   // return responses
-  $jsonResponse = $response->toJson();
-  $xmlResponse  = $response->toXml();  
+  echo $response->whois->date;
+  echo $response->toXml();  
   
  */
   
@@ -31,22 +31,55 @@ class DomaintoolsAPIResponse {
   /**
    * Request object for API
    */
-  private $api;
+  private $request;
+  private $json;
   
   /**
    * Constructs the DomaintoolsAPIResponse object
-   * @param DomaintoolsAPI $api the request object
+   * @param DomaintoolsAPI $request the request object
+   * @param string $json json string from request
    */
-  public function __construct(DomaintoolsAPI $api) {
-    $this->api = $api;
+  public function __construct($request, $json) {
+    if(!$request instanceof DomaintoolsAPI) {
+      throw new ServiceException(ServiceException::INVALID_REQUEST_OBJECT);
+    }
+    
+    $this->request = $request;
+    $this->json    = $json;
+    
+    $this->mergeJson(json_decode($json));
   }
   
   /**
-   * Force "json" as render type and execute the request 
-   * @return string Json
+   * Merge stdClass Json object with DomaintoolsAPIResponse
+   * @param stdClass $obj (object representation of json)
    */
-  public function toJson() {
-    return $this->api->withType('json')->execute();
+  public function mergeJson(&$obj) {
+    foreach($obj as $key => $value) {
+      
+      if($key != 'response') {
+        $this->$key = $value;
+      }
+      
+      if($value instanceof stdClass) {
+        $this->mergeJson($value);
+      } 
+    }
+  }
+  
+  /**
+   * Force "json" as render type and execute the request
+   * @param boolean $refresh (if true we force request + merge with DomaintoolsAPIResponse)
+   * @return string $this->json
+   */
+  public function toJson($refresh = false) {
+  
+    if($refresh) { 
+      $json = $this->request->withType('json')->execute();
+      $this->mergeJson(json_decode($json));
+      $this->json = $json;
+    }
+    return $this->json;
   }
   
   /**
@@ -72,7 +105,7 @@ class DomaintoolsAPIResponse {
    * @return string xml
    */  
   public function toXml() {
-    return $this->api->withType('xml')->execute();
+    return $this->request->withType('xml')->execute();
   }
   
   /**
@@ -80,6 +113,12 @@ class DomaintoolsAPIResponse {
    * @return string html
    */ 
   public function toHtml() {
-    return $this->api->withType('html')->execute();
+    return $this->request->withType('html')->execute();
+  }
+  /**
+   * Getter of the request object (DomaintoolsAPI)
+   */
+  public function getRequest() {
+    return $this->request;
   }
 }

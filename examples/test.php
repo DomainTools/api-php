@@ -4,12 +4,14 @@ require_once '../DomaintoolsAPI.class.php';
 
 $request = new DomaintoolsAPI();
 
-$request->from('domain-profile')
-        ->withType('json')
-        ->domain('domaintools.com');
+$response = $request->from('mark-alert')
+                    ->query('domaintools')
+                    ->execute();
 
-//$response = $request->execute();
+var_dump($response->toJson(true));
+//$response->getRequest()->from('domain')
 
-$response = new DomaintoolsAPIResponse($request);
+//echo $request->execute();
 
-echo $response->toJson();
+//$response = new DomaintoolsAPIResponse($request);
+//echo $response->toJson();
