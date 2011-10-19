@@ -32,6 +32,10 @@ class DomaintoolsAPIResponse {
    * Request object for API
    */
   private $request;
+  
+  /**
+   * Json string representing the response
+   */
   private $json;
   
   /**
@@ -39,19 +43,27 @@ class DomaintoolsAPIResponse {
    * @param DomaintoolsAPI $request the request object
    * @param string $json json string from request
    */
-  public function __construct($request, $json) {
+  public function __construct($request = null, $json = null) {
+  
+    $object = json_decode($json);
+    
     if(!$request instanceof DomaintoolsAPI) {
       throw new ServiceException(ServiceException::INVALID_REQUEST_OBJECT);
+    }
+    
+    if($object === null) {
+      throw new ServiceException(ServiceException::INVALID_JSON_STRING);
     }
     
     $this->request = $request;
     $this->json    = $json;
     
-    $this->mergeJson(json_decode($json));
+    $this->mergeJson($object);
   }
   
   /**
    * Merge stdClass Json object with DomaintoolsAPIResponse
+   * Ignore the "response" root element
    * @param stdClass $obj (object representation of json)
    */
   public function mergeJson(&$obj) {

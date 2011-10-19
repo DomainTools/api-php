@@ -124,7 +124,7 @@ class DomaintoolsAPIConfiguration {
 		$this->contentType				      = $config['content_type'];
 		$this->transportType            = $config['transport_type'];
 		
-		$this->baseUrl					        = $this->host.':'.$this->port.'/'.$this->subUrl;				
+		$this->baseUrl					        = 'http://'.$this->host.':'.$this->port.'/'.$this->subUrl;				
 
     $className                      = ucfirst($this->transportType).'RestService';
     $this->transport                = RESTServiceAbstract::factory($className, array($this->contentType));

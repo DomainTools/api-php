@@ -27,5 +27,6 @@ class ServiceException extends Exception {
   const EMPTY_CALL_REQUIRED    = "No domain or ip is required for this service"; 
   
   const INVALID_REQUEST_OBJECT = "Invalid object; DomaintoolsAPI instance required";   
+  const INVALID_JSON_STRING    = "Invalid json string; a valid one is required";
 }
 ?>

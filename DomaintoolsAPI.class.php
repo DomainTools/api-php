@@ -168,6 +168,11 @@ class domaintoolsAPI {
      * Name of the domain to use
      */
     private $domainName;
+
+    /**
+     * rawResponse sent by domaintoolsAPI
+     */    
+    private $rawResponse;
     
     /**
     * Array of domains/ips that can be called with no authentication or ip addresses restrictions
@@ -254,13 +259,13 @@ class domaintoolsAPI {
           return $this->url;
         }
         
-        $rawResponse = $this->request();
+        $this->rawResponse = $this->request();
         
         if(empty($this->returnType)) {
-          return new DomaintoolsAPIResponse($this, $rawResponse);
+          return new DomaintoolsAPIResponse($this, $this->rawResponse);
         }  
 
-        return $rawResponse;
+        return $this->rawResponse;
     }
     
     public function debug() {
@@ -358,10 +363,9 @@ class domaintoolsAPI {
 			  $response = $transport->get($this->url);
 
 		  }catch(Exception $e){
-		  
 			  throw new ServiceUnavailableException();
 		  }
-		  
+
       $status = $transport->getStatus();
 
       if($status != null){
@@ -440,6 +444,14 @@ class domaintoolsAPI {
      */
     public function setTransport(RestServiceInterface $transport) {
       $this->configuration->set('transport',$transport);
+    }
+    
+    /**
+     * Force a value for the response sent by the API
+     * @param mixed $response
+     */
+    public function setRawResponse($response) {
+      $this->rawResponse = $response;
     }
 }
 ?>
