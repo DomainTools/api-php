@@ -4,9 +4,9 @@ require_once '../DomaintoolsAPI.class.php';
 
 $request = new DomaintoolsAPI();
 
-$response = $request->from('domain-profile')
-                    ->domain('domaintools.com')
-                    ->withType('html')
+$response = $request->domain('domaintools.com')
+                    ->from('whois')
+                    ->withType('xml')
                     ->execute();
 
 die($response);

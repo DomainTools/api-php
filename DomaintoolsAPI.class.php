@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-require("DomaintoolsAPIConfiguration.class.php");
+require_once("DomaintoolsAPIConfiguration.class.php");
 require_once("DomaintoolsAPIResponse.class.php");
 
 require_once("lib/REST_Service/curl_rest_service_class.inc.php");
@@ -55,7 +55,7 @@ require_once("exceptions/BadRequestException.class.php");
   $xmlResponse = $response->toXml();  
   
  */
-class domaintoolsAPI {
+class DomaintoolsAPI {
 
     /**
      * Configuration (credentials, host,...)
@@ -65,85 +65,8 @@ class domaintoolsAPI {
 	  /**
      * Name of the service to call
      */
-    private $serviceName;
-
-	  /**
-     * Default Name of the service (if none given)
-     */
-    private $defaultServiceName = 'domain-profile';
-        
-	  /**
-     * Representation of the service in the url to call
-     * In most of cases, serviceName = serviceUri
-     * @example for serviceName = "domain-profile", serviceUri = ""
-     * @example for serviceName = "whois-lookup",   serviceUri = "whois"
-     */
-    private $serviceUri;    
-
-    /**
-     * Map table which associate serviceName to serviceUri
-     */
-    private static $mapServices = array(
-      ''                   => '',
-      'domain-profile'     => '',
-      'whois-lookup'       => 'whois',
-      'whois'              => 'whois',
-      'whois-history'      => 'whois/history',
-      'whois/history'      => 'whois/history',
-      'hosting-history'    => 'hosting-history',
-      'reverse-ip'         => 'reverse-ip',
-      'host-domains'       => 'host-domains',
-      'name-server-domains'=> 'name-server-domains',
-      'name-server-report' => 'name-server-domains',
-      'reverse-whois'      => 'reverse-whois',
-      'domain-suggestions' => 'domain-suggestions',
-      'domain-search'      => 'domain-search',
-      'mark-alert'         => 'mark-alert',
-      'brand-alert'        => 'mark-alert',
-      'registrant-alert'   => 'registrant-alert'
-    );
+    private $serviceName = '';
     
-    /**
-     * regex to validate an ip
-     */
-    const IP_REGEX         = "#^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$#";
-    
-    /**
-     * regex to validate a hostname
-     */
-    const HOSTNAME_REGEX   = "#^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$#";
-    
-    /**
-     * A call with a domain
-     */
-    const DOMAIN_CALL      = 1;
-    /**
-     * A call with an ip address
-     */    
-    const IP_CALL          = 2;
-    /**
-     * A call with no domain and no ip address
-     */    
-    const EMPTY_CALL       = 0;
-    /**
-     * For a given service (key), we have call ($value)
-     */
-    private static $mapServicesCalls = array(
-      ''                   => self::DOMAIN_CALL,
-      'whois'              => self::DOMAIN_CALL,
-      'whois/history'      => self::DOMAIN_CALL,
-      'hosting-history'    => self::DOMAIN_CALL,
-      'reverse-ip'         => self::DOMAIN_CALL,
-      'host-domains'       => self::IP_CALL,
-      'name-server-domains'=> self::EMPTY_CALL,
-      'reverse-whois'      => self::EMPTY_CALL,
-      'domain-suggestions' => self::EMPTY_CALL,
-      'domain-search'      => self::EMPTY_CALL,
-      'mark-alert'         => self::EMPTY_CALL,
-      'brand-alert'        => self::EMPTY_CALL,
-      'registrant-alert'   => self::EMPTY_CALL
-    );
-
     /**
      * Type of the return
      */
@@ -175,21 +98,12 @@ class domaintoolsAPI {
     private $rawResponse;
     
     /**
-    * Array of domains/ips that can be called with no authentication or ip addresses restrictions
-    * (ONLY for development usage; to test the API)
-    **/
-    private static $authorizedDomainsForTest = array("domaintools.com", "dailychanges.com", "nameintel.com", "reversewhois.com", "66.249.17.251");
-    
-    /**
      * Construct of the class with an optional given configuration object
      * @param DomaintoolsConfigurationAPI $configuration
      */
     public function __construct($configuration=false) {
 
   		$this->configuration  = (empty($configuration))? new domaintoolsAPIConfiguration() : $configuration;
-  		
-      $this->serviceName    = $this->defaultServiceName;
-      $this->serviceUri     = self::$mapServices[$this->defaultServiceName];
       $this->options        = array();
     }
 	
@@ -199,11 +113,7 @@ class domaintoolsAPI {
     * @return DomaintoolsAPI $this
     */
     public function from($serviceName = '') {
-        if(!array_key_exists($serviceName, self::$mapServices)) {
-          throw new ServiceException(ServiceException::UNKNOWN_SERVICE_NAME);
-        }
-        $this->serviceName = $serviceName;
-        $this->serviceUri  = self::$mapServices[$serviceName];        
+        $this->serviceName = $serviceName;    
         return $this;
     }
 
@@ -214,7 +124,7 @@ class domaintoolsAPI {
      */
     public function withType($returnType) {
       if(!in_array($returnType, self::$authorizedReturnTypes)) {
-        throw new ServiceException(ServiceException::UNKNOWN_RETURN_TYPE);
+        $returnType = 'json';
       }
       $this->returnType = $returnType;
       return $this;
@@ -226,14 +136,7 @@ class domaintoolsAPI {
      * @return DomaintoolsAPI $this
      * @todo check we have a valid domain
      */
-    public function domain($domainName = '') {
-      // domainName has to be a valid Domain or a valid IP
-      
-      /*if(!preg_match(self::HOSTNAME_REGEX, $domainName) && 
-         !preg_match(self::IP_REGEX, $domainName)) {
-         throw new ServiceException(ServiceException::INVALID_DOMAIN); 
-      }*/
-        
+    public function domain($domainName = '') {        
       $this->domainName = $domainName;
       return $this;
     }
@@ -247,7 +150,6 @@ class domaintoolsAPI {
     
         $rawResponse = "";
         $this->buildOptions();
-        $this->validateSettings();
         
         if(empty($this->returnType)) {
           $this->options['format'] = 'json';
@@ -273,37 +175,12 @@ class domaintoolsAPI {
     }
     
     /**
-     * Checks all the settings are good before calling the request
-     * Checks if a service required a domain, an ip, or nothing
-     */
-    private function validateSettings() {
-    
-        $isIp     = preg_match(self::IP_REGEX, $this->domainName);
-        $isDomain = preg_match(self::HOSTNAME_REGEX, $this->domainName);
-        
-        
-        if(self::$mapServicesCalls[$this->serviceUri] == self::DOMAIN_CALL && !$isDomain) {
-          throw new ServiceException(ServiceException::DOMAIN_CALL_REQUIRED);
-        }
-        
-        if(self::$mapServicesCalls[$this->serviceUri] == self::IP_CALL && !$isIp) {
-          throw new ServiceException(ServiceException::IP_CALL_REQUIRED);
-        }
-        
-        if(self::$mapServicesCalls[$this->serviceUri] == self::EMPTY_CALL && !empty($this->domainName)) {
-          throw new ServiceException(ServiceException::EMPTY_CALL_REQUIRED);
-        }
-    }
-    
-    /**
      * Add credentials to the Options array (if necessary).
      * First, we check if the domain name (or ip address) is authorized for a free testing of the API
      * If so, no credentials options will be added
      * If not, credentials are added
      */
     public function addCredentialsOptions() {
-    
-      //if(in_array($domainName, self::$authorizedDomainsForTest)) return;
       
       $api_username = $this->configuration->get('username');
       $api_key      = $this->configuration->get('password');
@@ -313,7 +190,7 @@ class domaintoolsAPI {
       
       if($this->configuration->get('secureAuth')) {
         $timestamp                   = gmdate("Y-m-d\TH:i:s\Z");
-        $uri                         = '/'.$this->configuration->get('subUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceUri;
+        $uri                         = '/'.$this->configuration->get('subUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName;
         $this->options['timestamp']  = $timestamp;
         $this->options['signature']  = hash_hmac('md5', $api_username . $timestamp . $uri, $api_key);
       }
@@ -331,7 +208,7 @@ class domaintoolsAPI {
       //allow access to multiple values for the same GET/POST parameter without the use of the brace ([]) notation
       $query_string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->options));
       
-      $this->url = $this->configuration->get('baseUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceUri."?".$query_string;
+      $this->url = $this->configuration->get('baseUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName."?".$query_string;
     }
 
     /**
@@ -410,24 +287,6 @@ class domaintoolsAPI {
     public function getServiceName() {
       
       return $this->serviceName;
-    }
-
-    /**
-     * Getter of the service uri
-     * @return string  $this->serviceUri
-     */    
-    public function getServiceUril() {
-      
-      return $this->serviceUri;
-    }
-    
-    /**
-     * Getter of the default service name
-     * @return string $this->defaultServiceName
-     */    
-    public function getDefaultServiceName() {
-      
-      return $this->defaultServiceName;
     }
     
     /**

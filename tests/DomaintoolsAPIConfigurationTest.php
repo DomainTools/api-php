@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__.'/../DomaintoolsAPIConfiguration.class.php';
+require_once __DIR__.'/../DomaintoolsAPIConfiguration.class.php';
 
 class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase
 {
