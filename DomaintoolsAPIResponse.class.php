@@ -39,44 +39,59 @@ class DomaintoolsAPIResponse {
   private $json;
   
   /**
+   * Json object representation
+   */
+  private $jsonObject;
+  
+  /**
    * Constructs the DomaintoolsAPIResponse object
    * @param DomaintoolsAPI $request the request object
    * @param string $json json string from request
    */
   public function __construct($request = null, $json = null) {
-  
-    $object = json_decode($json);
     
     if(!$request instanceof DomaintoolsAPI) {
       throw new ServiceException(ServiceException::INVALID_REQUEST_OBJECT);
     }
     
+    $this->mergeJson($json);
+        
+    $this->request = $request;
+  }
+  
+  /**
+   * Magic get method to create an alias :
+   * $this->history <=> $this->jsonObject->response->history
+   * if      $this->history already exists                => return it
+   * elseif  $this->jsonObject->response->history exists  => return it
+   * else                                                 => return null
+   */
+  public function __get($name) {
+    if(isset($this->$name)) {
+      return $this->$name;
+    } 
+    elseif($this->jsonObject->response->$name) {
+      return $this->jsonObject->response->$name;
+    } 
+    return null;
+    
+  }
+  
+  /**
+   * declare $this->json and $this->jsonObject only if json_decode worked
+   * otherwise we keep the old values
+   * @param string $json
+   */
+  public function mergeJson($json) {
+  
+    $object = json_decode($json);
+    
     if($object === null) {
       throw new ServiceException(ServiceException::INVALID_JSON_STRING);
     }
     
-    $this->request = $request;
-    $this->json    = $json;
-    
-    $this->mergeJson($object);
-  }
-  
-  /**
-   * Merge stdClass Json object with DomaintoolsAPIResponse
-   * Ignore the "response" root element
-   * @param stdClass $obj (object representation of json)
-   */
-  public function mergeJson(&$obj) {
-    foreach($obj as $key => $value) {
-      
-      if($key != 'response') {
-        $this->$key = $value;
-      }
-      
-      if($value instanceof stdClass) {
-        $this->mergeJson($value);
-      } 
-    }
+    $this->json       = $json;
+    $this->jsonObject = $object;  
   }
   
   /**
@@ -88,8 +103,7 @@ class DomaintoolsAPIResponse {
   
     if($refresh) { 
       $json = $this->request->withType('json')->execute();
-      $this->mergeJson(json_decode($json));
-      $this->json = $json;
+      $this->mergeJson($json);
     }
     return $this->json;
   }
