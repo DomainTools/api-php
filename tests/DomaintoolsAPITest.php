@@ -116,5 +116,124 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase
       $config['key']      == $options['api_key']
     );
   }
-       
+  
+  /**
+   * Checks BadRequestException raised for status code 400
+   */
+  public function testBadRequestExceptionRaised() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request       = new DomaintoolsAPI($configuration);
+    
+    $request->withType('json')->domain('domaintools.com');
+    
+    $url           = $request->debug();
+    $fixture_path  = __DIR__.'/fixtures/domain-profile/domaintools.com/good.json';
+    $transport     = $this->getTransport($url, $fixture_path, 400);
+    
+    $request->setTransport($transport);    
+    
+    try {
+      $request->execute();
+    }
+    catch(Exception $e) {
+       $this->assertTrue($e instanceof BadRequestException);
+    }
+  }  
+
+  /**
+   * Checks NotAuthorizedException raised for status code 403
+   */
+  public function testNotAuthorizedExceptionRaised() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request       = new DomaintoolsAPI($configuration);
+    
+    $request->withType('json')->domain('domaintools.com');
+    
+    $url           = $request->debug();
+    $fixture_path  = __DIR__.'/fixtures/domain-profile/domaintools.com/good.json';
+    $transport     = $this->getTransport($url, $fixture_path, 403);
+    
+    $request->setTransport($transport);    
+    
+    try {
+      $request->execute();
+    }
+    catch(Exception $e) {
+       $this->assertTrue($e instanceof NotAuthorizedException);
+    }
+  }
+  
+  /**
+   * Checks NotFoundException raised for status code 404
+   */
+  public function testNotFoundExceptionRaised() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request       = new DomaintoolsAPI($configuration);
+    
+    $request->withType('json')->domain('domaintools.com');
+    
+    $url           = $request->debug();
+    $fixture_path  = __DIR__.'/fixtures/domain-profile/domaintools.com/good.json';
+    $transport     = $this->getTransport($url, $fixture_path, 404);
+    
+    $request->setTransport($transport);    
+    
+    try {
+      $request->execute();
+    }
+    catch(Exception $e) {
+       $this->assertTrue($e instanceof NotFoundException);
+    }
+  }
+  
+  /**
+   * Checks InternalServerErrorException raised for status code 500
+   */
+  public function testInternalServerErrorExceptionRaised() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request       = new DomaintoolsAPI($configuration);
+    
+    $request->withType('json')->domain('domaintools.com');
+    
+    $url           = $request->debug();
+    $fixture_path  = __DIR__.'/fixtures/domain-profile/domaintools.com/good.json';
+    $transport     = $this->getTransport($url, $fixture_path, 500);
+    
+    $request->setTransport($transport);    
+    
+    try {
+      $request->execute();
+    }
+    catch(Exception $e) {
+       $this->assertTrue($e instanceof InternalServerErrorException);
+    }
+  }
+  
+  /**
+   * Checks ServiceUnavailableException raised for status code 503
+   */
+  public function testServiceUnavailableExceptionRaised() {
+    
+    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+    $request       = new DomaintoolsAPI($configuration);
+    
+    $request->withType('json')->domain('domaintools.com');
+    
+    $url           = $request->debug();
+    $fixture_path  = __DIR__.'/fixtures/domain-profile/domaintools.com/good.json';
+    $transport     = $this->getTransport($url, $fixture_path, 503);
+    
+    $request->setTransport($transport);    
+    
+    try {
+      $request->execute();
+    }
+    catch(Exception $e) {
+       $this->assertTrue($e instanceof ServiceUnavailableException);
+    }
+  }                 
 }
