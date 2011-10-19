@@ -36,7 +36,7 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase
   public function testMergeWithDefaultConfiguration() {
   
     $config = array(
-      'username' => 'eurodns', 
+      'username' => 'username', 
       'key'      => 'password'
     );
     
@@ -67,7 +67,7 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase
     
     try {
       $configuration = new DomaintoolsAPIConfiguration(array(
-        'username' => 'eurodns',
+        'username' => 'username',
         'key' => ''
       ));
     } catch (ServiceException $e) {
@@ -82,7 +82,7 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase
     include __DIR__.'/fixtures/FakeRestService.php';
     
     $configuration = new DomaintoolsAPIConfiguration(array(
-      'username'       => 'eurodns',
+      'username'       => 'username',
       'key'            => 'password',
       'transport_type' => 'fake'
     ));
@@ -99,7 +99,7 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase
     
     try {
       $configuration = new DomaintoolsAPIConfiguration(array(
-        'username'       => 'eurodns',
+        'username'       => 'username',
         'key'            => 'password',
         'transport_type' => 'bad'
       ));

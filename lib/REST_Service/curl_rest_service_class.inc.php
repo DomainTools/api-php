@@ -1,9 +1,7 @@
 <?php
 
 /*
-* This file is part of the domainAPI_php_wrapper package.
-*
-* Copyright (C) 2011 by domainAPI.com - EuroDNS S.A. 
+* This file is part of the domaintoolsAPI_php_wrapper package.
 *
 * For the full copyright and license information, please view the LICENSE
 * file that was distributed with this source code.
@@ -17,7 +15,7 @@ require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'rest_service_abstract_class.
   * Usage:
   * 	require("REST_Service/curl_rest_service_class.inc.php");
   * 	$curlRestService = new CurlRestService();
-  * 	echo $curlRestService->get('http://www.eurodns.com');
+  * 	echo $curlRestService->get('http://www.domaintools.com');
   */
 final class CurlRestService extends RESTServiceAbstract 
 {
