@@ -199,6 +199,7 @@ By default (If you don't call the method withType) the return type used is  a **
   $response = $request->from("whois")->domain('domaintools.com')->execute(); 
 ?>
 ```
+
 With this response object, you will be able to access to response properties :
 
 ```php
