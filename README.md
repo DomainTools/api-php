@@ -22,7 +22,7 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 ```php
 <?php
   // Require domaintoolsAPI PHP wrapper
-  require_once 'my/path/to/DomaintoolsAPI_class.php';
+  require_once 'my/path/to/DomaintoolsAPI.class.php';
 
   //Make a call to the webservice whois with a xml return
   //type for the domain name : domaintools.com
@@ -31,7 +31,7 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
   $request->from("whois")              // Name of the service
           ->withType("xml")            // Return type (JSON or XML or HTML)
           ->domain("domaintools.com")  // Domain name
-          ->execute();                   // Call the request
+          ->execute();                 // Call the request
 
   $response = $request->execute();
   //Display the response
@@ -233,6 +233,31 @@ To call the service use the method **execute**, and return the response.
 
 The response is a string with the format of the specify return type (JSON or XML for example).
 
+## Tests with PHPUnit ##
+
+Here is the procedure to test this API
+
+1- Install [PHPUnit](http://www.phpunit.de/)
+
+2- Go into the main directory containing the tests/ directory
+
+2- Call all tests once (in console) :
+
+```php
+phpunit tests/
+```
+
+In **tests/** is include all the tests classes. You should have a similar result :
+
+```php
+PHPUnit 3.5.15 by Sebastian Bergmann.
+
+....................
+
+Time: 1 second, Memory: 7.75Mb
+
+OK (20 tests, 31 assertions)
+```
 ## Changelog ##
 
 See the CHANGELOG.rdoc file for details.
