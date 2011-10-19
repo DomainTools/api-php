@@ -213,6 +213,7 @@ With this response object, you will be able to access to response properties :
 ```
 
 With this response object, you will be able to choose your return format :
+
 ```php
 <?php 
   $response = $request->from("whois")->domain('domaintools.com')->execute(); 
