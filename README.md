@@ -8,31 +8,30 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 
 1- Clone the project with Git by running:
 
-    $ git clone git://github.com/domaintools/domaintoolsAPI_php_wrapper
-
-   Or download the project in either [zip](https://github.com/domaintools/domaintoolsAPI_php_wrapper/zipball/master "Download in zip format") or [tar](https://github.com/domaintools/domaintoolsAPI_php_wrapper/tarball/master "Download in tar format") formats.
+    $ git clone git://github.com/DomainTools/api-php
 
 2- Rename the **api.ini.default** to **api.ini**
 
 3- Fill **api.ini**  with your domaintools credentials:
 
     username  = 'your_api_username';
-    key        = 'your_api_key';
+    key       = 'your_api_key';
 
-3-A Create a short PHP file which requires the project domaintoolsAPI PHP wrapper and makes a simple call to a webservice (**whois** for example):
+3-A Create a short PHP file which requires the DomaintoolsAPI.class.php and makes a simple call to a webservice (**whois** for example):
 
 ```php
 <?php
   // Require domaintoolsAPI PHP wrapper
-  require 'domaintoolsAPI_php_wrapper/DomaintoolsAPI_class.inc.php';
+  require_once 'my/path/to/DomaintoolsAPI_class.php';
 
   //Make a call to the webservice whois with a xml return
-  //type for the domain name : example.com
+  //type for the domain name : domaintools.com
   $request = new DomaintoolsAPI();
 
-  $request->from("whois") //name of the service (whois, info, availability)
-          ->withType("xml") // Return type (JSON or XML)
-          ->domain("example.com"); //Domain name
+  $request->from("whois")              // Name of the service
+          ->withType("xml")            // Return type (JSON or XML or HTML)
+          ->domain("domaintools.com")  // Domain name
+          ->execute();                   // Call the request
 
   $response = $request->execute();
   //Display the response
@@ -45,20 +44,26 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 ```php
 <?php
   // Require domaintoolsAPI PHP wrapper
-  require 'domaintoolsAPI_php_wrapper/DomaintoolsAPI_class.inc.php';
+  require_once 'my/path/to/DomaintoolsAPI.class.php';
 
   // we get the default configuration
   $configuration = new DomaintoolsAPIConfiguration();
+  
   // we change some values
-  $configuration->set('username','anotherUsername')->
-          set('password','anotherPassword');
-  //Make a call to the webservice whois with a xml return
-  //type for the domain name : example.com
+  $configuration->set('username','anotherUsername')
+                ->set('password','anotherPassword');
+                
+  // Make a call to the webservice whois with a xml return
+  // type for the domain name : domaintools.com
+  
   $request = new DomaintoolsAPI($configuration);
   $request->from("whois")
-          ->withType("json")
-          ->domain("example.com");
+          ->withType("xml")
+          ->domain("domaintools.com")
+          ->execute();
+          
   $response = $request->execute();
+  
   //Display the response
   echo $response;
 ?>
@@ -71,41 +76,66 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
    If everything works fine, you should have a display like this:
 
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <service>whois</service>
-  <domain>example.com</domain>
-  <timestamp>1296054220</timestamp>
-  <content>
-    <whois>&lt;![CDATA[
-      Whois Server Version 2.0
+<?xml version="1.0"?>
+<whoisapi>
+  <response>
+    <registrant>DomainTools, LLC</registrant>
+    <registration>
+      <created>1998-08-02</created>
+      <expires>2014-08-01</expires>
+      <updated>2010-08-31</updated>
+      <registrar>CHEAP-REGISTRAR.COM</registrar>
+      <statuses>ok</statuses>
+    </registration>
+    <name_servers>NS1.P09.DYNECT.NET</name_servers>
+    <name_servers>NS2.P09.DYNECT.NET</name_servers>
+    <name_servers>NS3.P09.DYNECT.NET</name_servers>
+    <name_servers>NS4.P09.DYNECT.NET</name_servers>
+    <whois>
+      <date>2011-10-17</date>
+      <record>Domain name: domaintools.com
 
-      Domain names in the .com and .net domains can now be registered
-      with many different competing registrars. Go to http://www.internic.net
-      for detailed information.
+      Registrant Contact:
+         DomainTools, LLC
+         Domain Administrator (memberservices@domaintools.com)
+         +1.2068389035
+         Fax: +1.2068389056
+         2211 5th Avenue
+         Suite 201
+         Seattle, WA 98121
+         US
 
-      EXAMPLE.COM.AU
-      EXAMPLE.COM
+      Administrative Contact:
+         DomainTools, LLC
+         Domain Administrator (memberservices@domaintools.com)
+         +1.2068389035
+         Fax: +1.2068389056
+         2211 5th Avenue
+         Suite 201
+         Seattle, WA 98121
+         US
 
-      To single out one record, look it up with "xxx", where xxx is one of the
-      of the records displayed above. If the records are the same, look them up
-      with "=xxx" to receive a full display for each record.
+      Technical Contact:
+         DomainTools, LLC
+         Domain Administrator (memberservices@domaintools.com)
+         +1.2068389035
+         Fax: +1.2068389056
+         2211 5th Avenue
+         Suite 201
+         Seattle, WA 98121
+         US
 
-      &gt;&gt;&gt; Last update of whois database: Tue, 25 Jan 2011 14:37:03 UTC &lt;&lt;&lt;
-
-      NOTICE: The expiration date displayed in this record is the date the
-      registrar's sponsorship of the domain name registration in the registry is
-      currently set to expire. This date does not necessarily reflect the expiration
-      date of the domain name registrant's agreement with the sponsoring
-      registrar.  Users may consult the sponsoring registrar's Whois database to
-      view the registrar's reported date of expiration for this registration.
-
-      The Registry database contains ONLY .COM, .NET, .EDU domains and
-      Registrars.
-      ]]&gt;
+         Status: Active
+         Creation Date: 13-Jul-2002
+         Expiration Date: 13-Jul-2016
+         Name Server: NS1.P09.DYNECT.NET
+         Name Server: NS2.P09.DYNECT.NET
+         Name Server: NS3.P09.DYNECT.NET
+         Name Server: NS4.P09.DYNECT.NET
+      </record>
     </whois>
-  </content>
-</Response>
+  </response>
+</whoisapi>
 ```
 
 5- Read the documentation to learn more, and visit [domaintools.com](http://domaintools.com "domaintools.com") to know the list of available services.
@@ -123,7 +153,13 @@ After having instanciate your request like this:
 You can combine methods to specify return type, options, etc.:
 
 ```php
-<?php $request->from("thumbnail")->where(array("return" => "fullsize"))->withType("xml")->domain("example.com"); ?>
+<?php 
+$request->from('mark-alert')
+        ->where(array("query" => "domaintools"))
+        ->withType("xml")
+        ->domain("domaintools.com")
+        ->execute(); 
+?>
 ```
 
 ### Choose service to call - from ###
@@ -131,23 +167,13 @@ You can combine methods to specify return type, options, etc.:
 ```php
 <?php $request->from("whois"); ?>
 ```
-
-You can find the list of available services on [domaintools.com](http://domaintools.com "domaintools.com") .
-
-### Call the service - execute ###
-
-```php
-<?php $request->from("whois")->domain("example.com")->execute(); ?>
-```
-
-To call the service use the method **execute**, and return the response.
-
-The response is a string with the format of the specify return type (JSON or XML for example).
+If no **from** is found the default service called will be [Domain Profile](http://www.domaintools.com/api/docs/domain-profile/). 
+You can find the list of available services on [domaintools.com](http://domaintools.com "domaintools.com").
 
 ### Specify options - where ###
 
 ```php
-<?php $request->from("domain-search")->where(array("query" => "domain tools")); ?>
+<?php $request->from("mark-alert")->where(array("query" => "domain tools")); ?>
 ```
 
 The method **where** allows to specify options of the service. It takes only on parameter, an array of options where the key is the name of the option and value is the value of the option.
@@ -163,7 +189,49 @@ The method **withType** allows to specify the return type of the response. It ta
 
 The list of return types is available on the [domaintoolsAPI documentation](http://domaintools.com/api/docs/ "domaintoolsAPI documentation") .
 
-By default (If you don't call the method withType) the return type used is **json**.
+
+### If no return type, a DomaintoolsAPIResponse object is returned ###
+
+By default (If you don't call the method withType) the return type used is  a **DomaintoolsAPIResponse** object:
+
+```php
+<?php 
+  $response = $request->from("whois")->domain('domaintools.com')->execute(); 
+?>
+```
+With this response object, you will be able to access to response properties :
+
+```php
+<?php 
+  $response = $request->from("whois")->domain('domaintools.com')->execute(); 
+    
+  echo $response->registrant; // Domaintools, LLC
+  
+  echo $response->whois->date; // 2011-10-17
+?>
+```
+
+With this response object, you will be able to choose your return format :
+```php
+<?php 
+  $response = $request->from("whois")->domain('domaintools.com')->execute(); 
+    
+  echo $response->toJson();
+  echo $respone->toXml();
+  echo $response->toHtml();
+?>
+```
+### Call the service - execute ###
+
+```php
+<?php 
+  $response = $request->from("whois")->domain("domaintools.com")->execute(); 
+?>
+```
+
+To call the service use the method **execute**, and return the response.
+
+The response is a string with the format of the specify return type (JSON or XML for example).
 
 ## Changelog ##
 
