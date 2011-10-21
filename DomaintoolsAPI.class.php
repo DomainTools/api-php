@@ -25,33 +25,33 @@ require_once("exceptions/BadRequestException.class.php");
   $request->from("whois")
 	        ->withType("xml")
 		      ->domain("example.com");
-		      
+
   $xmlResponse = $request->execute();
-							 
-							 
+
+
   @example of call with somes settings changes on the fly :
 	$configuration = new domaintoolsAPIConfiguration();
 	$configuration->set('username','anotherUsername')
 					      ->set('password','anotherPassword');
-					      
+
 	$request = new DomaintoolsAPI($configuration);
   $request->from("whois")
           ->withType("json")
 					->domain("example.com");
-					
+
   $jsonResponse = $request->execute():
-  
+
   @example of call returning a DomaintoolsResponse Object :
 
   $request = new DomaintoolsAPI();
   $request->from('whois')
           ->domain('domaintools.com');
-          
+
   $response = $request->execute();
-  
+
   $jsonResponse = $response->toJson();
-  $xmlResponse = $response->toXml();  
-  
+  $xmlResponse = $response->toXml();
+
  */
 class DomaintoolsAPI {
 
@@ -59,22 +59,22 @@ class DomaintoolsAPI {
      * Configuration (credentials, host,...)
      */
     private $configuration;
-    
+
 	  /**
      * Name of the service to call
      */
     private $serviceName = '';
-    
+
     /**
      * Type of the return
      */
     private $returnType = null;
-    
+
     /**
      * Authorized return types
-     */    
+     */
     private static $authorizedReturnTypes = array('json', 'xml', 'html');
-    
+
     /**
      * Url of the resource to call
      */
@@ -92,9 +92,9 @@ class DomaintoolsAPI {
 
     /**
      * rawResponse sent by domaintoolsAPI
-     */    
+     */
     private $rawResponse;
-    
+
     /**
      * Construct of the class with an optional given configuration object
      * @param DomaintoolsConfigurationAPI $configuration
@@ -104,14 +104,14 @@ class DomaintoolsAPI {
   		$this->configuration  = (empty($configuration))? new domaintoolsAPIConfiguration() : $configuration;
       $this->options        = array();
     }
-	
+
    /**
     * Specifies the name of the service to call.
     * @param string $serviceName name of the service
     * @return DomaintoolsAPI $this
     */
     public function from($serviceName = '') {
-        $this->serviceName = $serviceName;    
+        $this->serviceName = $serviceName;
         return $this;
     }
 
@@ -127,14 +127,14 @@ class DomaintoolsAPI {
       $this->returnType = $returnType;
       return $this;
     }
-    
+
     /**
      * Set the domain name to use for the API request
      * @param string $domainName (has to be an IP address OR a domain)
      * @return DomaintoolsAPI $this
      * @todo check we have a valid domain
      */
-    public function domain($domainName = '') {        
+    public function domain($domainName = '') {
       $this->domainName = $domainName;
       return $this;
     }
@@ -145,33 +145,33 @@ class DomaintoolsAPI {
      * @return DomaintoolsAPIResponse $response (if no returnType is specified)
      */
     public function execute($debug = false) {
-    
+
         $rawResponse = "";
         $this->buildOptions();
-        
+
         if(empty($this->returnType)) {
           $this->options['format'] = 'json';
         }
-        
+
         $this->buildUrl();
-        
+
         if($debug) {
           return $this->url;
         }
-        
+
         $this->rawResponse = $this->request();
-        
+
         if(empty($this->returnType)) {
           return new DomaintoolsAPIResponse($this, $this->rawResponse);
-        }  
+        }
 
         return $this->rawResponse;
     }
-    
+
     public function debug() {
       return $this->execute(true);
     }
-    
+
     /**
      * Add credentials to the Options array (if necessary).
      * First, we check if the domain name (or ip address) is authorized for a free testing of the API
@@ -179,33 +179,35 @@ class DomaintoolsAPI {
      * If not, credentials are added
      */
     public function addCredentialsOptions() {
-      
+
       $api_username = $this->configuration->get('username');
       $api_key      = $this->configuration->get('password');
-      
+
       $this->options['api_username'] = $api_username;
-      $this->options['api_key']      = $api_key;
-      
+
       if($this->configuration->get('secureAuth')) {
         $timestamp                   = gmdate("Y-m-d\TH:i:s\Z");
         $uri                         = '/'.$this->configuration->get('subUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName;
         $this->options['timestamp']  = $timestamp;
         $this->options['signature']  = hash_hmac('md5', $api_username . $timestamp . $uri, $api_key);
       }
+      else {
+        $this->options['api_key']    = $api_key;
+      }
     }
-    
+
     public function buildOptions() {
       $this->options['format'] = $this->getReturnType();
       $this->addCredentialsOptions();
     }
 
     /**
-     * Depending on the service name, and the options we built the good url to request   
+     * Depending on the service name, and the options we built the good url to request
      */
     public function buildUrl() {
       //allow access to multiple values for the same GET/POST parameter without the use of the brace ([]) notation
       $query_string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->options));
-      
+
       $this->url = $this->configuration->get('baseUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName."?".$query_string;
     }
 
@@ -219,7 +221,7 @@ class DomaintoolsAPI {
         $this->options = array_merge($options, $this->options);
         return $this;
     }
-    
+
     public function query($query) {
       return $this->where(
         array('query' => $query)
@@ -233,7 +235,7 @@ class DomaintoolsAPI {
      */
     private function request() {
       $transport = $this->configuration->get('transport');
-      
+
 		  try{
 			  $response = $transport->get($this->url);
 
@@ -257,7 +259,7 @@ class DomaintoolsAPI {
                   throw new InternalServerErrorException();
               case 503:
                   throw new ServiceUnavailableException();
-              default:                	
+              default:
                   throw new ServiceException();
           }
       }else{
@@ -277,24 +279,24 @@ class DomaintoolsAPI {
       }
       return $returnType;
     }
-    
+
     /**
      * Getter of the service name
      * @return string $this->serviceName
      */
     public function getServiceName() {
-      
+
       return $this->serviceName;
     }
-    
+
     /**
      * Getter of the options
      * @return array $this->options
-     */    
+     */
     public function getOptions() {
-      
+
       return $this->options;
-    }       
+    }
     /**
      * Force The configuration to use a given transport
      * @param RestServiceInterface $transport
@@ -302,7 +304,7 @@ class DomaintoolsAPI {
     public function setTransport(RestServiceInterface $transport) {
       $this->configuration->set('transport',$transport);
     }
-    
+
     /**
      * Force a value for the response sent by the API
      * @param mixed $response
@@ -312,3 +314,4 @@ class DomaintoolsAPI {
     }
 }
 ?>
+
