@@ -21,10 +21,10 @@ require_once("exceptions/BadRequestException.class.php");
 /**
   This class allow to call any service of the domaintoolsAPI
   @example of call with default values :
-	$request = new DomaintoolsAPI();
+  $request = new DomaintoolsAPI();
   $request->from("whois")
-	        ->withType("xml")
-		      ->domain("example.com");
+	      ->withType("xml")
+		  ->domain("example.com");
 
   $xmlResponse = $request->execute();
 
@@ -32,12 +32,12 @@ require_once("exceptions/BadRequestException.class.php");
   @example of call with somes settings changes on the fly :
 	$configuration = new domaintoolsAPIConfiguration();
 	$configuration->set('username','anotherUsername')
-					      ->set('password','anotherPassword');
+	  	          ->set('password','anotherPassword');
 
 	$request = new DomaintoolsAPI($configuration);
-  $request->from("whois")
-          ->withType("json")
-					->domain("example.com");
+    $request->from("whois")
+            ->withType("json")
+		    ->domain("example.com");
 
   $jsonResponse = $request->execute():
 
@@ -196,6 +196,9 @@ class DomaintoolsAPI {
       }
     }
 
+    /**
+     * Build all options in $this->options
+     */
     public function buildOptions() {
       $this->options['format'] = $this->getReturnType();
       $this->addCredentialsOptions();
@@ -222,6 +225,9 @@ class DomaintoolsAPI {
         return $this;
     }
 
+    /**
+     * Alias for $this->where(array('query' => $query))
+     */
     public function query($query) {
       return $this->where(
         array('query' => $query)
@@ -297,6 +303,7 @@ class DomaintoolsAPI {
 
       return $this->options;
     }
+
     /**
      * Force The configuration to use a given transport
      * @param RestServiceInterface $transport

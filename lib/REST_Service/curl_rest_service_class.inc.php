@@ -1,33 +1,31 @@
 <?php
 
-/*
-* This file is part of the domaintoolsAPI_php_wrapper package.
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * This file is part of the domaintoolsAPI_php_wrapper package.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'rest_service_abstract_class.inc.php');
 
 /**
-  * REST over CURL Implementation
-  * 
-  * Usage:
-  * 	require("REST_Service/curl_rest_service_class.inc.php");
-  * 	$curlRestService = new CurlRestService();
-  * 	echo $curlRestService->get('http://www.domaintools.com');
-  */
-final class CurlRestService extends RESTServiceAbstract 
-{
-    
+ * REST over CURL Implementation
+ *
+ * Usage:
+ * 	require("REST_Service/curl_rest_service_class.inc.php");
+ * 	$curlRestService = new CurlRestService();
+ * 	echo $curlRestService->get('http://www.domaintools.com');
+ */
+final class CurlRestService extends RESTServiceAbstract {
+
     private $lastInfo;
-    
-	/*
+
+	/**
 	 * options
 	 * Default CURL options
 	 */
-	public function __construct($content_type, $options = array())
-	{
+	public function __construct($content_type, $options = array())	{
 	    $defaults = array(
 		    'CURLOPT_CUSTOM_HTTPHEADER' => '',
 		    'CURLOPT_CUSTOM_RAWDATA' => '',
@@ -40,86 +38,75 @@ final class CurlRestService extends RESTServiceAbstract
 	    );
 	    parent::__construct($content_type, array_merge($defaults, $options));
 	}
-	/*
+
+	/**
 	 * SEND
 	 * Generic method to send requests to a specific URL
 	 */
-	protected function send($method, $url, $dataArr = array())
-	{
-		if (($cUrl = curl_init($url)) == false)
-		{
+	protected function send($method, $url, $dataArr = array()) {
+		if (($cUrl = curl_init($url)) == false)	{
 		 	throw new Exception("CURL_INIT ERROR [".$url." | ".curl_error($cUrl)."]");
 		}
-		
+
 		curl_setopt($cUrl, CURLOPT_URL, $url);
 		curl_setopt($cUrl, CURLOPT_CUSTOMREQUEST, $method);
-		foreach ($this->options AS $constant => $value)
-		{
-			if (defined ($constant))
-			{
+		foreach ($this->options AS $constant => $value) {
+			if (defined ($constant)) {
 				curl_setopt($cUrl, constant ($constant), $value);
 			}
 		}
-		
-		if (in_array(strtoupper($method), array('POST','PUT')) AND is_array ($dataArr))
-		{
+
+		if (in_array(strtoupper($method), array('POST','PUT')) AND is_array ($dataArr))	{
 			$data = '';
-			
-			if (! empty ($this->options['CURLOPT_CUSTOM_RAWDATA']) AND $this->options['CURLOPT_CUSTOM_RAWDATA'] == true)
-			{
+
+			if (! empty ($this->options['CURLOPT_CUSTOM_RAWDATA']) AND $this->options['CURLOPT_CUSTOM_RAWDATA'] == true) {
 				$data = http_build_query($dataArr);
 			}
-			else
-			{
-				foreach ($dataArr AS $key => $value)
-				{
+			else {
+				foreach ($dataArr AS $key => $value) {
 					$data .= $key.'='.$value.'&';
-				}			
+				}
 			}
-			
-			if ( ! empty ($this->options['CURLOPT_CUSTOM_HTTPHEADER']))
-			{			
+
+			if ( ! empty ($this->options['CURLOPT_CUSTOM_HTTPHEADER']))	{
 				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array($this->options['CURLOPT_CUSTOM_HTTPHEADER'] ,'Content-Length: '.strlen($data)));
 			}
-			else
-			{
+			else {
 				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array('Content-Length: '.strlen($data)));
 			}
 			curl_setopt($cUrl, CURLOPT_POSTFIELDS, $data);
 		}
 		if (in_array(strtoupper($method), array('POST','PUT')) AND !is_array ($dataArr)) {
-		    
-		    $data = $dataArr ; 
-			if ( ! empty ($this->options['CURLOPT_CUSTOM_HTTPHEADER']))
-			{
-			    
+
+		    $data = $dataArr ;
+			if ( ! empty ($this->options['CURLOPT_CUSTOM_HTTPHEADER'])) {
+
 				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array($this->options['CURLOPT_CUSTOM_HTTPHEADER'] ,'Content-Length: '.strlen($data)));
 			}
-			else
-			{ 
+			else {
 				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array('Content-Length: '.strlen($data)));
 			}
-			
+
 			curl_setopt($cUrl, CURLOPT_POSTFIELDS, $data);
 		}
-		if (($result = curl_exec($cUrl)) == false)
-		{
+		if (($result = curl_exec($cUrl)) == false) {
 			throw new Exception("CURL_EXEC ERROR [".$url." | ".curl_error($cUrl)."]");
 		}
 		$this->lastInfo = curl_getinfo($cUrl);
-		//Close connection		
+		//Close connection
 		curl_close($cUrl);
 		//Return result
-		return $result;			
+		return $result;
 	}
-	
-	public function getInfo(){
+
+	public function getInfo() {
 	    return $this->lastInfo;
 	}
-	
-	public function getStatus(){
+
+	public function getStatus() {
 	  return $this->lastInfo['http_code'];
 	}
 }
 
 ?>
+
