@@ -28,10 +28,9 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
   //type for the domain name : domaintools.com
   $request = new DomaintoolsAPI();
 
-  $request->from("whois")              // Name of the service
-          ->withType("xml")            // Return type (JSON or XML or HTML)
-          ->domain("domaintools.com")  // Domain name
-          ->execute();                 // Call the request
+  $request->from("whois")               // Name of the service
+          ->withType("xml")             // Return type (JSON or XML or HTML)
+          ->domain("domaintools.com");  // Domain name
 
   $response = $request->execute();
   //Display the response
@@ -48,22 +47,21 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 
   // we get the default configuration
   $configuration = new DomaintoolsAPIConfiguration();
-  
+
   // we change some values
   $configuration->set('username','anotherUsername')
                 ->set('password','anotherPassword');
-                
+
   // Make a call to the webservice whois with a xml return
   // type for the domain name : domaintools.com
-  
+
   $request = new DomaintoolsAPI($configuration);
   $request->from("whois")
           ->withType("xml")
-          ->domain("domaintools.com")
-          ->execute();
-          
+          ->domain("domaintools.com");
+
   $response = $request->execute();
-  
+
   //Display the response
   echo $response;
 ?>
@@ -153,12 +151,12 @@ After having instanciate your request like this:
 You can combine methods to specify return type, options, etc.:
 
 ```php
-<?php 
+<?php
 $request->from('mark-alert')
         ->where(array("query" => "domaintools"))
         ->withType("xml")
         ->domain("domaintools.com")
-        ->execute(); 
+        ->execute();
 ?>
 ```
 
@@ -167,7 +165,7 @@ $request->from('mark-alert')
 ```php
 <?php $request->from("whois"); ?>
 ```
-If no **from** is found the default service called will be [Domain Profile](http://www.domaintools.com/api/docs/domain-profile/). 
+If no **from** is found the default service called will be [Domain Profile](http://www.domaintools.com/api/docs/domain-profile/).
 You can find the list of available services on [domaintools.com](http://domaintools.com "domaintools.com").
 
 ### Specify options - where ###
@@ -187,7 +185,7 @@ The list of options for each service is available on the [domaintoolsAPI documen
 ```
 The method **withType** allows to specify the return type of the response. It takes only one parameter, the **name** of the return type.
 
-The list of return types is available on the [domaintoolsAPI documentation](http://domaintools.com/api/docs/ "domaintoolsAPI documentation") .
+The list of return types is available on the [domaintoolsAPI documentation](http://domaintools.com/api/docs/ "domaintoolsAPI documentation").
 
 
 ### If no return type, a DomaintoolsAPIResponse object is returned ###
@@ -195,19 +193,19 @@ The list of return types is available on the [domaintoolsAPI documentation](http
 By default (If you don't call the method withType) the return type used is  a **DomaintoolsAPIResponse** object:
 
 ```php
-<?php 
-  $response = $request->from("whois")->domain('domaintools.com')->execute(); 
+<?php
+  $response = $request->from("whois")->domain('domaintools.com')->execute();
 ?>
 ```
 
 With this response object, you will be able to access to response properties :
 
 ```php
-<?php 
-  $response = $request->from("whois")->domain('domaintools.com')->execute(); 
-    
+<?php
+  $response = $request->from("whois")->domain('domaintools.com')->execute();
+
   echo $response->registrant; // Domaintools, LLC
-  
+
   echo $response->whois->date; // 2011-10-17
 ?>
 ```
@@ -215,9 +213,9 @@ With this response object, you will be able to access to response properties :
 With this response object, you will be able to choose your return format :
 
 ```php
-<?php 
-  $response = $request->from("whois")->domain('domaintools.com')->execute(); 
-    
+<?php
+  $response = $request->from("whois")->domain('domaintools.com')->execute();
+
   echo $response->toJson();
   echo $respone->toXml();
   echo $response->toHtml();
@@ -226,8 +224,8 @@ With this response object, you will be able to choose your return format :
 ### Call the service - execute ###
 
 ```php
-<?php 
-  $response = $request->from("whois")->domain("domaintools.com")->execute(); 
+<?php
+  $response = $request->from("whois")->domain("domaintools.com")->execute();
 ?>
 ```
 
@@ -262,9 +260,10 @@ OK (20 tests, 31 assertions)
 ```
 ## Changelog ##
 
-See the CHANGELOG.rdoc file for details.
+See the CHANGELOG.md file for details.
 
 ## License ##
 
 Copyright (C) 2011 by domaintools.com, DomaintoolsAPI PHP Wrapper is released under the MIT license.
 See the LICENSE.md file for details.
+
