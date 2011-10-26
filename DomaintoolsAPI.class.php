@@ -320,6 +320,9 @@ class DomaintoolsAPI {
       $this->rawResponse = $response;
     }
 
+    /**
+     * Getter for $this->rawResponse
+     */
     public function getRawresponse() {
         return $this->rawResponse;
     }
