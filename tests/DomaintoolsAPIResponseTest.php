@@ -31,7 +31,7 @@ class DomaintoolsResponseTest extends PHPUnit_Framework_TestCase {
 
     $this->request       = new DomaintoolsAPI($this->configuration);
 
-    $this->request->from('domain-profile')->domain('domaintools.com');
+    $this->request->domain('domaintools.com');
 
     $url                 = $this->request->debug();
     $fixture_path        = __DIR__.'/fixtures/domain-profile/domaintools.com/good.json';

@@ -48,20 +48,6 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
   }
 
   /**
-   * Checks ServiceException raised if unknown serviceName
-   */
-  public function testServiceExceptionIfUnknownServiceName() {
-
-    $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
-    $request = new DomaintoolsAPI($configuration);
-    try {
-      $request->from('unknwonService');
-    } catch (ServiceException $e) {
-      $this->assertTrue($e->getMessage() == ServiceException::UNKNOWN_SERVICE_NAME);
-    }
-  }
-
-  /**
    * Checks ServiceException raised if unknown returnType
    */
   public function testJsonCallIfUnknownReturnType() {

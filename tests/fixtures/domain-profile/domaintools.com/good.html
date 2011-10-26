@@ -1,0 +1,102 @@
+
+			<html>
+			<head>
+				<title>DomainTools API</title>
+				<style type="text/css">
+					BODY {
+						font-family: Arial, Helvetica, sans-serif;
+						font-size: 12px;
+					}
+					DIV.section DIV.section {
+						border-left: 2px solid #E1E1E1;
+						margin-left: 3px;
+						padding-left: 15px;
+					}
+					DIV.heading {
+						padding-top: 8px;
+					}
+					#next-query-form {
+						border-bottom: 1px solid black;
+						padding-bottom: 5px;
+						margin-bottom: 15px;
+					}
+					#query-string {
+						font-size: 14px;
+						font-weight: bold;
+					}
+					#footer {
+						border-top: 1px solid black;
+						margin-top: 20px;
+						padding-top: 5px;
+						margin-bottom: 10px;
+						text-align: center;
+						font-size: 11px;
+					}
+					PRE {
+						margin-top: 0px;
+						margin-left: 3px;
+						padding-left: 15px;
+					}
+				</style>
+				<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
+			</head>
+			<body>
+			<h1>DomainTools API</h1><div id="next-query-form">
+							 <input type="text" size="40" id="query-string" onKeyPress="watchForEnter(event);" value="domaintools.com"/>
+							 <input type="button" name="btn_submit" value="Go" onclick="submitForm();"/>
+							 </div>
+							 <script type="text/javascript">
+							 function watchForEnter(event) {
+								if(!event) event = window.event;	//IE
+
+								if((typeof(event.keyCode) == "number" || typeof(event.which) == "number") && (event.keyCode == 13 || event.which == 13)){
+									submitForm();
+								}						
+							 }
+							 function submitForm() {
+								var parts = document.URL.split("/");
+								var new_url = "http://" + parts[2] + "/" + parts[3] + "/" + jQuery("#query-string").val();
+								for(i=5;i<parts.length;i++) {
+									new_url = new_url + "/" + parts[i];
+								}
+								location.href = new_url;
+							 }
+							 jQuery("#query-string").focus();
+							 </script><div class='section'><div class='heading'>Registrant</div><div class='section'><span class='item-name'>Name</span>: <span class='item-value'>DomainTools, LLC</span>
+</div><div class='section'><span class='item-name'>Domains</span>: <span class='item-value'>205</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/research/reverse-whois/?all[]=DomainTools%2C+LLC&none[]=</span>
+</div></div><div class='section'><div class='heading'>Server</div><div class='section'><span class='item-name'>Ip address</span>: <span class='item-value'>4.27.8.254</span>
+</div><div class='section'><span class='item-name'>Other domains</span>: <span class='item-value'>2563</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/research/reverse-ip/?hostname=domaintools.com</span>
+</div></div><div class='section'><div class='heading'>Registration</div><div class='section'><span class='item-name'>Created</span>: <span class='item-value'>1998-08-02</span>
+</div><div class='section'><span class='item-name'>Expires</span>: <span class='item-value'>2014-08-01</span>
+</div><div class='section'><span class='item-name'>Updated</span>: <span class='item-value'>2010-08-31</span>
+</div><div class='section'><span class='item-name'>Registrar</span>: <span class='item-value'>CHEAP-REGISTRAR.COM</span>
+</div><div class='section'><div class='heading'>Statuses</div><div class='section'><span class='item-name'>0</span>: <span class='item-value'>ok</span>
+</div></div></div><div class='section'><div class='heading'>Name servers</div><div class='section'><div class='heading'>0</div><div class='section'><span class='item-name'>Server</span>: <span class='item-value'>NS1.P09.DYNECT.NET</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/research/name-server-report/?nameserver=NS1.P09.DYNECT.NET</span>
+</div></div><div class='section'><div class='heading'>1</div><div class='section'><span class='item-name'>Server</span>: <span class='item-value'>NS2.P09.DYNECT.NET</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/research/name-server-report/?nameserver=NS2.P09.DYNECT.NET</span>
+</div></div><div class='section'><div class='heading'>2</div><div class='section'><span class='item-name'>Server</span>: <span class='item-value'>NS3.P09.DYNECT.NET</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/research/name-server-report/?nameserver=NS3.P09.DYNECT.NET</span>
+</div></div><div class='section'><div class='heading'>3</div><div class='section'><span class='item-name'>Server</span>: <span class='item-value'>NS4.P09.DYNECT.NET</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/research/name-server-report/?nameserver=NS4.P09.DYNECT.NET</span>
+</div></div></div><div class='section'><div class='heading'>History</div><div class='section'><div class='heading'>Registrar</div><div class='section'><span class='item-name'>Earliest event</span>: <span class='item-value'>2002-04-12</span>
+</div><div class='section'><span class='item-name'>Events</span>: <span class='item-value'>3</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/research/hosting-history/?q=domaintools.com</span>
+</div></div><div class='section'><div class='heading'>Name server</div><div class='section'><span class='item-name'>Events</span>: <span class='item-value'>6</span>
+</div><div class='section'><span class='item-name'>Timespan in years</span>: <span class='item-value'>9</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/research/hosting-history/?q=domaintools.com</span>
+</div></div><div class='section'><div class='heading'>Ip address</div><div class='section'><span class='item-name'>Events</span>: <span class='item-value'>37</span>
+</div><div class='section'><span class='item-name'>Timespan in years</span>: <span class='item-value'>8</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/research/hosting-history/?q=domaintools.com</span>
+</div></div><div class='section'><div class='heading'>Whois</div><div class='section'><span class='item-name'>Records</span>: <span class='item-value'>2100</span>
+</div><div class='section'><span class='item-name'>Earliest event</span>: <span class='item-value'>2001-10-26</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/research/whois-history/?q=domaintools.com&page=results</span>
+</div></div></div><div class='section'><div class='heading'>Seo</div><div class='section'><span class='item-name'>Score</span>: <span class='item-value'>97</span>
+</div><div class='section'><span class='item-name'>Product url</span>: <span class='item-value'>http://www.domaintools.com/seo-browser/?domain=domaintools.com</span>
+</div></div>
+		
+			<div id="footer">Data provided by DomainTools, LLC&mdash;Tue, 18 Oct 2011 05:59:16 -0700</div>
+			</body>
+			</html>
