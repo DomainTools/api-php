@@ -162,7 +162,7 @@ class DomaintoolsAPI {
         $this->rawResponse = $this->request();
 
         if(empty($this->returnType)) {
-          return new DomaintoolsAPIResponse($this, $this->rawResponse);
+          return new DomaintoolsAPIResponse($this);
         }
 
         return $this->rawResponse;
@@ -318,6 +318,10 @@ class DomaintoolsAPI {
      */
     public function setRawResponse($response) {
       $this->rawResponse = $response;
+    }
+
+    public function getRawresponse() {
+        return $this->rawResponse;
     }
 }
 ?>

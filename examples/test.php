@@ -6,7 +6,8 @@ require_once '../DomaintoolsAPI.class.php';
 $request = new DomaintoolsAPI();
 
 $response = $request->domain('domaintools.com')
+                    ->from('whois')
                     ->execute();
 
-var_dump($response->history);
+var_dump($response->toJson());
 
