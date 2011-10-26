@@ -265,5 +265,6 @@ See the CHANGELOG.md file for details.
 ## License ##
 
 Copyright (C) 2011 by domaintools.com, DomaintoolsAPI PHP Wrapper is released under the MIT license.
+
 See the LICENSE.md file for details.
 
