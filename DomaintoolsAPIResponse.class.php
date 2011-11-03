@@ -7,140 +7,140 @@
  */
 
  /**
-  @example of call returning a DomaintoolsResponse Object :
+    @example of call returning a DomaintoolsResponse Object :
 
-  // configure the request
-  $request      = new DomaintoolsAPI();
-  $response     = $request->from('whois')
+    // configure the request
+    $request      = new DomaintoolsAPI();
+    $response     = $request->from('whois')
                           ->domain('domaintools.com')
                           ->execute();
 
-  // send request to the response object
-  $response     = new DomaintoolsAPIResponse($request);
+    // send request to the response object
+    $response     = new DomaintoolsAPIResponse($request);
 
-  // return responses
-  echo $response->whois->date;
-  echo $response->toXml();
+    // return responses
+    echo $response->whois->date;
+    echo $response->toXml();
 
  */
 
 class DomaintoolsAPIResponse {
 
-  /**
-   * Request object for API
-   */
-  private $request;
+    /**
+     * Request object for API
+     */
+    protected $request;
 
-  /**
-   * Json string representing the response
-   */
-  private $json;
+    /**
+     * Json string representing the response
+     */
+    protected $json;
 
-  /**
-   * Json object representation
-   */
-  private $jsonObject;
+    /**
+     * Json object representation
+     */
+    protected $jsonObject;
 
-  /**
-   * Constructs the DomaintoolsAPIResponse object
-   * @param DomaintoolsAPI $request the request object
-   */
-  public function __construct($request = null) {
+    /**
+     * Constructs the DomaintoolsAPIResponse object
+     * @param DomaintoolsAPI $request the request object
+     */
+    public function __construct($request = null) {
 
-    if(!$request instanceof DomaintoolsAPI) {
-      throw new ServiceException(ServiceException::INVALID_REQUEST_OBJECT);
-    }
-    $this->mergeJson($request->getRawResponse());
-    $this->request = $request;
-  }
-
-  /**
-   * Magic get method to create an alias :
-   * $this->history <=> $this->jsonObject->response->history
-   * if      $this->history already exists                => return it
-   * elseif  $this->jsonObject->response->history exists  => return it
-   * else                                                 => return null
-   */
-  public function __get($name) {
-    if(isset($this->$name)) {
-      return $this->$name;
-    }
-    elseif($this->jsonObject->response->$name) {
-      return $this->jsonObject->response->$name;
-    }
-    return null;
-
-  }
-
-  /**
-   * declare $this->json and $this->jsonObject only if json_decode worked
-   * otherwise we keep the old values
-   * @param string $json
-   */
-  public function mergeJson($json) {
-
-    $object = json_decode($json);
-
-    if($object === null) {
-      throw new ServiceException(ServiceException::INVALID_JSON_STRING);
+        if(!$request instanceof DomaintoolsAPI) {
+            throw new ServiceException(ServiceException::INVALID_REQUEST_OBJECT);
+        }
+        $this->mergeJson($request->getRawResponse());
+        $this->request = $request;
     }
 
-    $this->json       = $json;
-    $this->jsonObject = $object;
-  }
-
-  /**
-   * Force "json" as render type and execute the request
-   * @param boolean $refresh (if true we force request + merge with DomaintoolsAPIResponse)
-   * @return string $this->json
-   */
-  public function toJson($refresh = false) {
-
-    if($refresh) {
-      $json = $this->request->withType('json')->execute();
-      $this->mergeJson($json);
+    /**
+     * Magic get method to create an alias :
+     * $this->history <=> $this->jsonObject->response->history
+     * if      $this->history already exists                => return it
+     * elseif  $this->jsonObject->response->history exists  => return it
+     * else                                                 => return null
+     */
+    public function __get($name) {
+        if(isset($this->$name)) {
+            return $this->$name;
+        }
+        elseif($this->jsonObject->response->$name) {
+            return $this->jsonObject->response->$name;
+        }
+        return null;
     }
-    return $this->json;
-  }
 
-  /**
-   * Force "json" as render type and execute the request
-   * Converts the Json to an stdClass object
-   * @return stdClass
-   */
-  public function toObject() {
-    return json_decode($this->toJson());
-  }
+    /**
+     * declare $this->json and $this->jsonObject only if json_decode worked
+     * otherwise we keep the old values
+     * @param string $json
+     */
+    public function mergeJson($json) {
 
-  /**
-   * Force "json" as render type and execute the request
-   * Converts the Json to an array
-   * @return array
-   */
-  public function toArray() {
-    return json_decode($this->toJson(), true);
-  }
+        $object = json_decode($json);
 
-  /**
-   * Force "xml" as render type and execute the request
-   * @return string xml
-   */
-  public function toXml() {
-    return $this->request->withType('xml')->execute();
-  }
+        if($object === null) {
+            throw new ServiceException(ServiceException::INVALID_JSON_STRING);
+        }
 
-  /**
-   * Force "html" as render type and execute the request
-   * @return string html
-   */
-  public function toHtml() {
-    return $this->request->withType('html')->execute();
-  }
-  /**
-   * Getter of the request object (DomaintoolsAPI)
-   */
-  public function getRequest() {
-    return $this->request;
-  }
+        $this->json       = $json;
+        $this->jsonObject = $object;
+    }
+
+    /**
+     * Force "json" as render type and execute the request
+     * @param boolean $refresh (if true we force request + merge with DomaintoolsAPIResponse)
+     * @return string $this->json
+     */
+    public function toJson($refresh = false) {
+
+        if($refresh) {
+            $json = $this->request->withType('json')->execute();
+            $this->mergeJson($json);
+        }
+        return $this->json;
+    }
+
+    /**
+     * Force "json" as render type and execute the request
+     * Converts the Json to an stdClass object
+     * @return stdClass
+     */
+    public function toObject() {
+        return json_decode($this->toJson());
+    }
+
+    /**
+     * Force "json" as render type and execute the request
+     * Converts the Json to an array
+     * @return array
+     */
+    public function toArray() {
+        return json_decode($this->toJson(), true);
+    }
+
+    /**
+     * Force "xml" as render type and execute the request
+     * @return string xml
+     */
+    public function toXml() {
+        return $this->request->withType('xml')->execute();
+    }
+
+    /**
+     * Force "html" as render type and execute the request
+     * @return string html
+     */
+    public function toHtml() {
+        return $this->request->withType('html')->execute();
+    }
+
+    /**
+     * Getter of the request object (DomaintoolsAPI)
+     */
+    public function getRequest() {
+        return $this->request;
+    }
 }
 

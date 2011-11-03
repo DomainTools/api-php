@@ -14,63 +14,63 @@ class DomaintoolsAPIConfiguration {
 	/**
 	 * Server Host
 	 */
-	private $host;
+	protected $host;
 
 	/**
 	 * Server Port
 	 */
-	private $port;
+	protected $port;
 
 	/**
 	 * Sub URL (version)
 	 */
-	private $subUrl;
+	protected $subUrl;
 
 	/**
 	 * Complete URL
 	 */
-	private $baseUrl;
+	protected $baseUrl;
 
 	/**
 	 * Domaintools API Username
 	 */
-	private $username;
+	protected $username;
 
 	/**
 	 * Domaintools API Password
 	 */
-	private $password;
+	protected $password;
 
 	/**
 	 * (Boolean) force to secure authentication
 	 */
-	private $secureAuth;
+	protected $secureAuth;
 
 	/**
 	 * Default return type (json/xml/html)
 	 */
-	private $returnType;
+	protected $returnType;
 
 	/**
 	 * transport type (curl, etc.)
 	 */
-	private $transportType;
+	protected $transportType;
 
 	/**
 	 * Object in charge of calling the API
 	 */
-	private $transport;
+	protected $transport;
 
 	/**
 	 * default config file path
 	 */
-	private $defaultConfigPath;
+	protected $defaultConfigPath;
 
 	/**
 	 * default configuration
 	 * (that will be use to complete if necessary)
 	 */
-	private $defaultConfig = array(
+	protected $defaultConfig = array(
       'username'       => '',
       'key'            => '',
       'host'           => 'api.domaintools.com',
@@ -88,27 +88,27 @@ class DomaintoolsAPIConfiguration {
    */
 	public function __construct($ini_resource = '') {
 
-	  $this->defaultConfigPath = __DIR__.'/api.ini';
+        $this->defaultConfigPath = __DIR__.'/api.ini';
 
-	  if(empty($ini_resource)) $ini_resource = $this->defaultConfigPath;
+        if(empty($ini_resource)) $ini_resource = $this->defaultConfigPath;
 
-	  if(!is_array($ini_resource)) {
-	    if(!file_exists($ini_resource)) {
-	      throw new ServiceException(ServiceException::INVALID_CONFIG_PATH);
-	    }
-      $config = parse_ini_file($ini_resource);
+        if(!is_array($ini_resource)) {
+            if(!file_exists($ini_resource)) {
+                throw new ServiceException(ServiceException::INVALID_CONFIG_PATH);
+            }
+            $config = parse_ini_file($ini_resource);
+        }
+        elseif(is_array($ini_resource)) {
+            $config = $ini_resource;
+        }
+        $this->init($config);
     }
-    elseif(is_array($ini_resource)) {
-	    $config = $ini_resource;
-	  }
-	  $this->init($config);
-  }
 
   /**
    * Initialize the configuration Object
    * @param array $config - Associative array for configuration
    */
-    private function init($config = array()) {
+    protected function init($config = array()) {
 
         $config                         = $this->validateParams($config);
 
@@ -129,50 +129,50 @@ class DomaintoolsAPIConfiguration {
 
     }
 
-  /**
-   * Validate options from a given array
-   * Merge with the default configuration
-   * @param array $config - Associative array for configuration
-   * @return array $config cleaned up
-   */
-  private function validateParams($config) {
+    /**
+     * Validate options from a given array
+     * Merge with the default configuration
+     * @param array $config - Associative array for configuration
+     * @return array $config cleaned up
+     */
+    protected function validateParams($config) {
 
-    $config = array_merge($this->defaultConfig, $config);
+        $config = array_merge($this->defaultConfig, $config);
 
-    if(empty($config['username'])) {
-      throw new ServiceException(ServiceException::EMPTY_API_USERNAME);
+        if(empty($config['username'])) {
+            throw new ServiceException(ServiceException::EMPTY_API_USERNAME);
+        }
+
+        if(empty($config['key'])) {
+            throw new ServiceException(ServiceException::EMPTY_API_KEY);
+        }
+
+        try {
+            $class = new ReflectionClass($config['transport_type'].'RestService');
+        }
+        catch(ReflectionException $e) {
+            throw new ReflectionException(ServiceException::TRANSPORT_NOT_FOUND);
+        }
+
+        if(!$class->implementsInterface('RestServiceInterface')) {
+            $config['transport_type'] = $this->defaultConfig['transport_type'];
+        }
+
+        return $config;
     }
-
-    if(empty($config['key'])) {
-      throw new ServiceException(ServiceException::EMPTY_API_KEY);
-    }
-
-    try {
-      $class = new ReflectionClass($config['transport_type'].'RestService');
-    }
-    catch(ReflectionException $e) {
-      throw new ReflectionException(ServiceException::TRANSPORT_NOT_FOUND);
-    }
-
-    if(!$class->implementsInterface('RestServiceInterface')) {
-      $config['transport_type'] = $this->defaultConfig['transport_type'];
-    }
-
- 	  return $config;
-  }
-  /**
-   * global getter
-   */
+    /**
+     * global getter
+     */
     public function get($var) {
-		return $this->$var;
-	}
+        return $this->$var;
+    }
 
-  /**
-   * global setter
-   */
-	public function set($var,$val) {
-		$this->$var = $val;
-		return $this;
-	}
+    /**
+     * global setter
+     */
+    public function set($var,$val) {
+        $this->$var = $val;
+        return $this;
+    }
 }
 
