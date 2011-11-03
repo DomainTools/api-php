@@ -7,6 +7,10 @@
  * file that was distributed with this source code.
  */
 
-class NotFoundException extends ServiceException{}
+class NotFoundException extends ServiceException {
+    public function __construct($message='', $code=0) {
+        parent::__construct($message, $code);
+    }
+}
 ?>
 

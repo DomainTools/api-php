@@ -19,38 +19,38 @@ require_once("exceptions/InternalServerErrorException.class.php");
 require_once("exceptions/BadRequestException.class.php");
 
 /**
-  This class allow to call any service of the domaintoolsAPI
-  @example of call with default values :
-  $request = new DomaintoolsAPI();
-  $request->from("whois")
-	      ->withType("xml")
-		  ->domain("example.com");
+    This class allow to call any service of the domaintoolsAPI
+    @example of call with default values :
+    $request = new DomaintoolsAPI();
+    $request->from("whois")
+          ->withType("xml")
+	      ->domain("example.com");
 
-  $xmlResponse = $request->execute();
+    $xmlResponse = $request->execute();
 
 
-  @example of call with somes settings changes on the fly :
-	$configuration = new domaintoolsAPIConfiguration();
-	$configuration->set('username','anotherUsername')
-	  	          ->set('password','anotherPassword');
+    @example of call with somes settings changes on the fly :
+    $configuration = new domaintoolsAPIConfiguration();
+    $configuration->set('username','anotherUsername')
+      	          ->set('password','anotherPassword');
 
-	$request = new DomaintoolsAPI($configuration);
+    $request = new DomaintoolsAPI($configuration);
     $request->from("whois")
             ->withType("json")
-		    ->domain("example.com");
+	        ->domain("example.com");
 
-  $jsonResponse = $request->execute():
+    $jsonResponse = $request->execute():
 
-  @example of call returning a DomaintoolsResponse Object :
+    @example of call returning a DomaintoolsResponse Object :
 
-  $request = new DomaintoolsAPI();
-  $request->from('whois')
+    $request = new DomaintoolsAPI();
+    $request->from('whois')
           ->domain('domaintools.com');
 
-  $response = $request->execute();
+    $response = $request->execute();
 
-  $jsonResponse = $response->toJson();
-  $xmlResponse = $response->toXml();
+    $jsonResponse = $response->toJson();
+    $xmlResponse = $response->toXml();
 
  */
 class DomaintoolsAPI {
@@ -58,42 +58,42 @@ class DomaintoolsAPI {
     /**
      * Configuration (credentials, host,...)
      */
-    private $configuration;
+    protected $configuration;
 
-	  /**
+    /**
      * Name of the service to call
      */
-    private $serviceName = '';
+    protected $serviceName = '';
 
     /**
      * Type of the return
      */
-    private $returnType = null;
+    protected $returnType = null;
 
     /**
      * Authorized return types
      */
-    private static $authorizedReturnTypes = array('json', 'xml', 'html');
+    protected static $authorizedReturnTypes = array('json', 'xml', 'html');
 
     /**
      * Url of the resource to call
      */
-    private $url;
+    protected $url;
 
     /**
      * An array of options
      */
-    private $options;
+    protected $options;
 
     /**
      * Name of the domain to use
      */
-    private $domainName;
+    protected $domainName;
 
     /**
      * rawResponse sent by domaintoolsAPI
      */
-    private $rawResponse;
+    protected $rawResponse;
 
     /**
      * Construct of the class with an optional given configuration object
@@ -101,8 +101,8 @@ class DomaintoolsAPI {
      */
     public function __construct($configuration=false) {
 
-  		$this->configuration  = (empty($configuration))? new domaintoolsAPIConfiguration() : $configuration;
-      $this->options        = array();
+        $this->configuration  = (empty($configuration))? new domaintoolsAPIConfiguration() : $configuration;
+        $this->options        = array();
     }
 
    /**
@@ -121,11 +121,11 @@ class DomaintoolsAPI {
      * @return DomaintoolsAPI $this
      */
     public function withType($returnType) {
-      if(!in_array($returnType, self::$authorizedReturnTypes)) {
-        $returnType = 'json';
-      }
-      $this->returnType = $returnType;
-      return $this;
+        if(!in_array($returnType, self::$authorizedReturnTypes)) {
+            $returnType = 'json';
+        }
+        $this->returnType = $returnType;
+        return $this;
     }
 
     /**
@@ -135,8 +135,8 @@ class DomaintoolsAPI {
      * @todo check we have a valid domain
      */
     public function domain($domainName = '') {
-      $this->domainName = $domainName;
-      return $this;
+        $this->domainName = $domainName;
+        return $this;
     }
 
     /**
@@ -150,26 +150,26 @@ class DomaintoolsAPI {
         $this->buildOptions();
 
         if(empty($this->returnType)) {
-          $this->options['format'] = 'json';
+            $this->options['format'] = 'json';
         }
 
         $this->buildUrl();
 
         if($debug) {
-          return $this->url;
+            return $this->url;
         }
 
         $this->rawResponse = $this->request();
 
         if(empty($this->returnType)) {
-          return new DomaintoolsAPIResponse($this);
+            return new DomaintoolsAPIResponse($this);
         }
 
         return $this->rawResponse;
     }
 
     public function debug() {
-      return $this->execute(true);
+        return $this->execute(true);
     }
 
     /**
@@ -180,38 +180,38 @@ class DomaintoolsAPI {
      */
     public function addCredentialsOptions() {
 
-      $api_username = $this->configuration->get('username');
-      $api_key      = $this->configuration->get('password');
+        $api_username                    = $this->configuration->get('username');
+        $api_key                         = $this->configuration->get('password');
 
-      $this->options['api_username'] = $api_username;
+        $this->options['api_username']   = $api_username;
 
-      if($this->configuration->get('secureAuth')) {
-        $timestamp                   = gmdate("Y-m-d\TH:i:s\Z");
-        $uri                         = '/'.$this->configuration->get('subUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName;
-        $this->options['timestamp']  = $timestamp;
-        $this->options['signature']  = hash_hmac('md5', $api_username . $timestamp . $uri, $api_key);
-      }
-      else {
-        $this->options['api_key']    = $api_key;
-      }
+        if($this->configuration->get('secureAuth')) {
+            $timestamp                   = gmdate("Y-m-d\TH:i:s\Z");
+            $uri                         = '/'.$this->configuration->get('subUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName;
+            $this->options['timestamp']  = $timestamp;
+            $this->options['signature']  = hash_hmac('md5', $api_username . $timestamp . $uri, $api_key);
+        }
+        else {
+            $this->options['api_key']    = $api_key;
+        }
     }
 
     /**
      * Build all options in $this->options
      */
     public function buildOptions() {
-      $this->options['format'] = $this->getReturnType();
-      $this->addCredentialsOptions();
+        $this->options['format'] = $this->getReturnType();
+        $this->addCredentialsOptions();
     }
 
     /**
      * Depending on the service name, and the options we built the good url to request
      */
     public function buildUrl() {
-      //allow access to multiple values for the same GET/POST parameter without the use of the brace ([]) notation
-      $query_string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->options));
+        //allow access to multiple values for the same GET/POST parameter without the use of the brace ([]) notation
+        $query_string = preg_replace('/%5B(?:[0-9]|[1-9][0-9]+)%5D=/', '=', http_build_query($this->options));
 
-      $this->url = $this->configuration->get('baseUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName."?".$query_string;
+        $this->url = $this->configuration->get('baseUrl').(!empty($this->domainName)?'/'.$this->domainName.'/':'/').$this->serviceName."?".$query_string;
     }
 
     /**
@@ -229,9 +229,9 @@ class DomaintoolsAPI {
      * Alias for $this->where(array('query' => $query))
      */
     public function query($query) {
-      return $this->where(
-        array('query' => $query)
-      );
+        return $this->where(
+            array('query' => $query)
+        );
     }
 
     /**
@@ -239,51 +239,54 @@ class DomaintoolsAPI {
      * else return an exception.
      * @return string|DomaintoolsAPI response of the service
      */
-    private function request() {
-      $transport = $this->configuration->get('transport');
+    protected function request() {
+        $transport = $this->configuration->get('transport');
 
-		  try{
-			  $response = $transport->get($this->url);
+        try{
+            $response = $transport->get($this->url);
+        }catch(Exception $e){
+            throw new ServiceUnavailableException();
+        }
 
-		  }catch(Exception $e){
-			  throw new ServiceUnavailableException();
-		  }
+        $status = $transport->getStatus();
 
-      $status = $transport->getStatus();
+        if($status != null){
 
-      if($status != null){
-          switch($status){
+            if($status!=200) {
+                list($code, $message) = $this->parseError($response);
+            }
+            switch($status){
               case 200:
                   return $response;
               case 400:
-                  throw new BadRequestException();
+                  throw new BadRequestException($message, $code);
               case 403:
-                  throw new NotAuthorizedException();
+                  throw new NotAuthorizedException($message, $code);
               case 404:
-                  throw new NotFoundException();
+                  throw new NotFoundException($message, $code);
               case 500:
-                  throw new InternalServerErrorException();
+                  throw new InternalServerErrorException($message, $code);
               case 503:
-                  throw new ServiceUnavailableException();
+                  throw new ServiceUnavailableException($message, $code);
               default:
-                  throw new ServiceException();
-          }
-      }else{
-          throw new ServiceException('Response is empty');
-      }
+                  throw new ServiceException($message, $code);
+            }
+        }else{
+            throw new ServiceException('Response is empty');
+        }
     }
 
     /**
      * Getter of the return type
      * @return string $returnType
      */
-    private function getReturnType() {
-      if($this->returnType != null){
-          $returnType = $this->returnType;
-      }else{
-          $returnType = $this->configuration->get('returnType');
-      }
-      return $returnType;
+    public function getReturnType() {
+        if($this->returnType != null){
+            $returnType = $this->returnType;
+        }else{
+            $returnType = $this->configuration->get('returnType');
+        }
+        return $returnType;
     }
 
     /**
@@ -292,7 +295,7 @@ class DomaintoolsAPI {
      */
     public function getServiceName() {
 
-      return $this->serviceName;
+        return $this->serviceName;
     }
 
     /**
@@ -301,7 +304,7 @@ class DomaintoolsAPI {
      */
     public function getOptions() {
 
-      return $this->options;
+        return $this->options;
     }
 
     /**
@@ -309,7 +312,7 @@ class DomaintoolsAPI {
      * @param RestServiceInterface $transport
      */
     public function setTransport(RestServiceInterface $transport) {
-      $this->configuration->set('transport',$transport);
+        $this->configuration->set('transport',$transport);
     }
 
     /**
@@ -317,7 +320,7 @@ class DomaintoolsAPI {
      * @param mixed $response
      */
     public function setRawResponse($response) {
-      $this->rawResponse = $response;
+        $this->rawResponse = $response;
     }
 
     /**
@@ -325,6 +328,36 @@ class DomaintoolsAPI {
      */
     public function getRawresponse() {
         return $this->rawResponse;
+    }
+
+    /**
+     * Extract from the response, the error code and the error message
+     * In order to add it to the exception
+     * @param $response returned by the API
+     * @return Array containing code and message
+     */
+    protected function parseError($response) {
+        $returnType          = $this->getReturnType();
+        $rep                 = new stdClass;
+        $rep->error->code    = 0;
+        $rep->error->message = '';
+
+        if($returnType=='json') {
+            $rep    = json_decode($response);
+        }
+        elseif($returnType=='xml') {
+            $rep    = simplexml_load_string($response);
+        }
+        elseif($returnType=='html') {
+            preg_match_all("#<span class='item-value'>(.+)</span>#",$response,$matches);
+            $rep->error->code = $matches[1][0];
+            $rep->error->message = $matches[1][1];
+        }
+
+        return array(
+            (string) $rep->error->code,
+            (string) $rep->error->message
+        );
     }
 }
 ?>

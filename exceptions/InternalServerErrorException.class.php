@@ -7,6 +7,10 @@
  * file that was distributed with this source code.
  */
 
-class InternalServerErrorException extends ServiceException{}
+class InternalServerErrorException extends ServiceException {
+    public function __construct($message='', $code=0) {
+        parent::__construct($message, $code);
+    }
+}
 ?>
 

@@ -138,6 +138,14 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 
 5- Read the documentation to learn more, and visit [domaintools.com](http://domaintools.com "domaintools.com") to know the list of available services.
 
+## Examples for a quick start ##
+In **examples/** directory you will find some typical calls to API :
+
+```php
+$php 1-first-call-to-api.php
+$php 2-different-calls-for-same-result.php
+...
+```
 ## Documentation ##
 
 The domaintoolsAPI PHP Wrapper is a fluent API implemented by using method chaining.
