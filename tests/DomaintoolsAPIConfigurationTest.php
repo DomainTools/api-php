@@ -47,31 +47,32 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * Checks ServiceException raised if empty username
+     * Checks NotAuthorizedException raised if empty username
      */
-    public function testServiceExceptionIfEmptyUsername() {
+    public function testNotAuthorizedExceptionIfEmptyUsername() {
 
         try {
             $configuration = new DomaintoolsAPIConfiguration(array(
                 'username' => ''
             ));
-        } catch (ServiceException $e) {
-            $this->assertTrue($e->getMessage() == ServiceException::EMPTY_API_USERNAME);
+        } catch (Exception $e) {
+            $this->assertTrue($e instanceof NotAuthorizedException);
+            //$this->assertTrue($e->getMessage() == ServiceException::EMPTY_API_USERNAME);
         }
     }
 
     /**
-     * Checks ServiceException raised if empty key
+     * Checks NotAuthorizedException raised if invalid credentials
      */
-    public function testServiceExceptionIfEmptyKey() {
+    public function testNotAuthorizedExceptionIfInvalidCredentials() {
 
         try {
             $configuration = new DomaintoolsAPIConfiguration(array(
                 'username' => 'username',
                 'key' => ''
             ));
-        } catch (ServiceException $e) {
-            $this->assertTrue($e->getMessage() == ServiceException::EMPTY_API_KEY);
+        } catch (NotAuthorizedException $e) {
+            $this->assertTrue($e instanceof NotAuthorizedException);
         }
     }
 
