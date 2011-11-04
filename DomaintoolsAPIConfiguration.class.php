@@ -71,16 +71,16 @@ class DomaintoolsAPIConfiguration {
 	 * (that will be use to complete if necessary)
 	 */
 	protected $defaultConfig = array(
-      'username'       => '',
-      'key'            => '',
-      'host'           => 'api.domaintools.com',
-      'port'           => '80',
-      'version'        => 'v1',
-      'secure_auth'    => true,
-      'return_type'    => 'json',
-      'transport_type' => 'curl',
-      'content_type'   => 'application/json'
-   );
+        'username'       => '',
+        'key'            => '',
+        'host'           => 'api.domaintools.com',
+        'port'           => '80',
+        'version'        => 'v1',
+        'secure_auth'    => true,
+        'return_type'    => 'json',
+        'transport_type' => 'curl',
+        'content_type'   => 'application/json'
+    );
 
   /**
    * Construct of the class and initiliaze with default values (if no config given)
