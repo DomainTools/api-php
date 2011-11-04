@@ -142,8 +142,8 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 In **examples/** directory you will find some typical calls to API :
 
 ```php
-$php 1-first-call-to-api.php
-$php 2-different-calls-for-same-result.php
+$ php 1-first-call-to-api.php
+$ php 2-different-calls-for-same-result.php
 ...
 ```
 ## Documentation ##
@@ -252,7 +252,7 @@ Here is the procedure to test this API
 2- Call all tests once (in console) :
 
 ```php
-phpunit tests/
+$ phpunit tests/
 ```
 
 In **tests/** is include all the tests classes. You should have a similar result :

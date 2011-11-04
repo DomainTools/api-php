@@ -139,13 +139,13 @@ class DomaintoolsAPIConfiguration {
 
         $config = array_merge($this->defaultConfig, $config);
 
-        if(empty($config['username'])) {
+        /*if(empty($config['username'])) {
             throw new ServiceException(ServiceException::EMPTY_API_USERNAME);
         }
 
         if(empty($config['key'])) {
             throw new ServiceException(ServiceException::EMPTY_API_KEY);
-        }
+        }*/
 
         try {
             $class = new ReflectionClass($config['transport_type'].'RestService');
