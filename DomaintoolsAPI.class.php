@@ -216,12 +216,13 @@ class DomaintoolsAPI {
 
     /**
      * This function allows you to specify an array of options
+     * The current options array is merged with a new one
      * @param array $options an array of options
      * @return DomaintoolsAPI $this
      */
     public function where($options) {
         if(!is_array($options)) throw new ServiceException(ServiceException::INVALID_OPTIONS);
-        $this->options = array_merge($options, $this->options);
+        $this->options = array_merge($this->options, $options);
         return $this;
     }
 
