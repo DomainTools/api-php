@@ -89,54 +89,6 @@ class DomaintoolsAPIResponse {
     }
 
     /**
-     * Force "json" as render type and execute the request
-     * @param boolean $refresh (if true we force request + merge with DomaintoolsAPIResponse)
-     * @return string $this->json
-     */
-    public function toJson($refresh = false) {
-
-        if($refresh) {
-            $json = $this->request->withType('json')->execute();
-            $this->mergeJson($json);
-        }
-        return $this->json;
-    }
-
-    /**
-     * Force "json" as render type and execute the request
-     * Converts the Json to an stdClass object
-     * @return stdClass
-     */
-    public function toObject() {
-        return json_decode($this->toJson());
-    }
-
-    /**
-     * Force "json" as render type and execute the request
-     * Converts the Json to an array
-     * @return array
-     */
-    public function toArray() {
-        return json_decode($this->toJson(), true);
-    }
-
-    /**
-     * Force "xml" as render type and execute the request
-     * @return string xml
-     */
-    public function toXml() {
-        return $this->request->withType('xml')->execute();
-    }
-
-    /**
-     * Force "html" as render type and execute the request
-     * @return string html
-     */
-    public function toHtml() {
-        return $this->request->withType('html')->execute();
-    }
-
-    /**
      * Getter of the request object (DomaintoolsAPI)
      */
     public function getRequest() {
