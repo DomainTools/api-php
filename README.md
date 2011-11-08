@@ -196,6 +196,7 @@ The method **withType** allows to specify the return type of the response. It ta
 The list of return types is available on the [domaintoolsAPI documentation](http://domaintools.com/api/docs/ "domaintoolsAPI documentation").
 
 You can also use **toJson**, **toXml** and **toHtml** as aliases of withType :
+
 ```php
 <?php
   echo $request->from("whois")->domain('domaintools.com')->toJson()->execute(); // returns Json
