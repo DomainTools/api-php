@@ -129,6 +129,27 @@ class DomaintoolsAPI {
     }
 
     /**
+     * Alias for $this->withType('json')
+     */
+    public function toJson() {
+        return $this->withType('json');
+    }
+
+    /**
+     * Alias for $this->withType('xml')
+     */
+    public function toXml() {
+        return $this->withType('xml');
+    }
+
+    /**
+     * Alias for $this->withType('html')
+     */
+    public function toHtml() {
+        return $this->withType('html');
+    }
+
+    /**
      * Set the domain name to use for the API request
      * @param string $domainName (has to be an IP address OR a domain)
      * @return DomaintoolsAPI $this

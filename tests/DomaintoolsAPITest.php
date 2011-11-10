@@ -221,5 +221,38 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
             $this->assertTrue($e instanceof ServiceUnavailableException);
         }
     }
+
+    /**
+     * Checks toJson() sets 'json' as returnType
+     */
+    public function testToJsonSetsJsonAsReturnType() {
+        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $request       = new DomaintoolsAPI($configuration);
+
+        $request->toJson();
+        $this->assertTrue($request->getReturnType()=='json');
+    }
+
+    /**
+     * Checks toXml() sets 'xml' as returnType
+     */
+    public function testToXmlSetsXmlAsReturnType() {
+        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $request       = new DomaintoolsAPI($configuration);
+
+        $request->toXml();
+        $this->assertTrue($request->getReturnType()=='xml');
+    }
+
+    /**
+     * Checks toHtml() sets 'html' as returnType
+     */
+    public function testToHtmlSetsHtmlAsReturnType() {
+        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $request       = new DomaintoolsAPI($configuration);
+
+        $request->toHtml();
+        $this->assertTrue($request->getReturnType()=='html');
+    }
 }
 
