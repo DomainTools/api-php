@@ -91,7 +91,7 @@ class DomaintoolsAPIConfiguration {
    */
 	public function __construct($ini_resource = '') {
 
-        $this->defaultConfigPath = __DIR__.'/api.ini';
+        $this->defaultConfigPath = dirname(__FILE__).'/api.ini';
 
         if(empty($ini_resource)) $ini_resource = $this->defaultConfigPath;
 

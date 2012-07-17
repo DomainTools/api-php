@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../DomaintoolsAPIConfiguration.class.php';
+require_once dirname(__FILE__).'/../DomaintoolsAPIConfiguration.class.php';
 
 class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase {
 
@@ -10,7 +10,7 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase {
      */
     public function testDefaultConfigCalledIfNoneGiven() {
 
-        $defaultConfigPath = realpath(__DIR__."/../api.ini");
+        $defaultConfigPath = realpath(dirname(__FILE__)."/../api.ini");
         $configuration = new DomaintoolsAPIConfiguration();
 
         $this->assertTrue($defaultConfigPath == $configuration->get('defaultConfigPath'));
@@ -81,7 +81,7 @@ class DomaintoolsAPIConfigurationTest extends PHPUnit_Framework_TestCase {
      */
     public function testDefaultTransportCalledIfCurrentOneNotValid() {
 
-        include __DIR__.'/fixtures/FakeRestService.php';
+        include dirname(__FILE__).'/fixtures/FakeRestService.php';
 
         $configuration = new DomaintoolsAPIConfiguration(array(
             'username'       => 'username',

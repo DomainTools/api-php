@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__.'/../DomaintoolsAPIResponse.class.php';
-require_once __DIR__.'/../DomaintoolsAPI.class.php';
-require_once __DIR__.'/../DomaintoolsAPIConfiguration.class.php';
+require_once dirname(__FILE__).'/../DomaintoolsAPIResponse.class.php';
+require_once dirname(__FILE__).'/../DomaintoolsAPI.class.php';
+require_once dirname(__FILE__).'/../DomaintoolsAPIConfiguration.class.php';
 
 class DomaintoolsResponseTest extends PHPUnit_Framework_TestCase {
     /**
@@ -27,14 +27,14 @@ class DomaintoolsResponseTest extends PHPUnit_Framework_TestCase {
      * Set up before each test
      */
     public function setUp() {
-        $this->configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $this->configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
 
         $this->request       = new DomaintoolsAPI($this->configuration);
 
         $this->request->domain('domaintools.com');
 
         $url                 = $this->request->debug();
-        $fixture_path        = __DIR__.'/fixtures/domain-profile/domaintools.com/good.json';
+        $fixture_path        = dirname(__FILE__).'/fixtures/domain-profile/domaintools.com/good.json';
         $transport           = $this->getTransport($url, $fixture_path);
 
         $this->request->setTransport($transport);

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/../DomaintoolsAPI.class.php';
+require_once dirname(__FILE__).'/../DomaintoolsAPI.class.php';
 
 class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
 
@@ -24,7 +24,7 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
    */
     public function testTransportCallsOnGet() {
 
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
 
         $request = new DomaintoolsAPI($configuration);
 
@@ -37,7 +37,7 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
         $transport->expects($this->once())
               ->method('get')
               ->with($request->debug())
-              ->will($this->returnValue(file_get_contents(__DIR__.'/fixtures/domain-profile/domaintools.com/good.json')));
+              ->will($this->returnValue(file_get_contents(dirname(__FILE__).'/fixtures/domain-profile/domaintools.com/good.json')));
 
         $request->setTransport($transport);
         try {
@@ -52,13 +52,13 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testJsonCallIfUnknownReturnType() {
 
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
         $request       = new DomaintoolsAPI($configuration);
 
         $request->withType('unknownType')->domain('domaintools.com');
 
         $url           = $request->debug();
-        $fixture_path  = __DIR__.'/fixtures/domain-profile/domaintools.com/good.json';
+        $fixture_path  = dirname(__FILE__).'/fixtures/domain-profile/domaintools.com/good.json';
         $transport     = $this->getTransport($url, $fixture_path, 200);
 
         $request->setTransport($transport);
@@ -73,7 +73,7 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testServiceExceptionIfInvalidOptions() {
 
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
         $request       = new DomaintoolsAPI($configuration);
         try {
             $request->where('invalidOptions');
@@ -87,7 +87,7 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testAddCredentialsForUnsecureAuthentication() {
 
-        $config        = parse_ini_file(__DIR__.'/../api.ini');
+        $config        = parse_ini_file(dirname(__FILE__).'/../api.ini');
         $configuration = new DomaintoolsAPIConfiguration($config);
         $configuration->set('secureAuth', false);
 
@@ -107,13 +107,13 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testBadRequestExceptionRaised() {
 
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
         $request       = new DomaintoolsAPI($configuration);
 
         $request->withType('json')->domain('domaintools.com');
 
         $url           = $request->debug();
-        $fixture_path  = __DIR__.'/fixtures/errors/400.json';
+        $fixture_path  = dirname(__FILE__).'/fixtures/errors/400.json';
         $transport     = $this->getTransport($url, $fixture_path, 400);
 
         $request->setTransport($transport);
@@ -131,13 +131,13 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testNotAuthorizedExceptionRaised() {
 
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
         $request       = new DomaintoolsAPI($configuration);
 
         $request->withType('json')->domain('domaintools.com');
 
         $url           = $request->debug();
-        $fixture_path  = __DIR__.'/fixtures/errors/403.json';
+        $fixture_path  = dirname(__FILE__).'/fixtures/errors/403.json';
         $transport     = $this->getTransport($url, $fixture_path, 403);
 
         $request->setTransport($transport);
@@ -155,13 +155,13 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testNotFoundExceptionRaised() {
 
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
         $request       = new DomaintoolsAPI($configuration);
 
         $request->withType('json')->domain('domaintools.com');
 
         $url           = $request->debug();
-        $fixture_path  = __DIR__.'/fixtures/errors/404.json';
+        $fixture_path  = dirname(__FILE__).'/fixtures/errors/404.json';
         $transport     = $this->getTransport($url, $fixture_path, 404);
 
         $request->setTransport($transport);
@@ -179,13 +179,13 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testInternalServerErrorExceptionRaised() {
 
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
         $request       = new DomaintoolsAPI($configuration);
 
         $request->withType('json')->domain('domaintools.com');
 
         $url           = $request->debug();
-        $fixture_path  = __DIR__.'/fixtures/errors/500.json';
+        $fixture_path  = dirname(__FILE__).'/fixtures/errors/500.json';
         $transport     = $this->getTransport($url, $fixture_path, 500);
 
         $request->setTransport($transport);
@@ -203,13 +203,13 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testServiceUnavailableExceptionRaised() {
 
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
         $request       = new DomaintoolsAPI($configuration);
 
         $request->withType('json')->domain('domaintools.com');
 
         $url           = $request->debug();
-        $fixture_path  = __DIR__.'/fixtures/errors/503.json';
+        $fixture_path  = dirname(__FILE__).'/fixtures/errors/503.json';
         $transport     = $this->getTransport($url, $fixture_path, 503);
 
         $request->setTransport($transport);
@@ -226,7 +226,7 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      * Checks toJson() sets 'json' as returnType
      */
     public function testToJsonSetsJsonAsReturnType() {
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
         $request       = new DomaintoolsAPI($configuration);
 
         $request->toJson();
@@ -237,7 +237,7 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      * Checks toXml() sets 'xml' as returnType
      */
     public function testToXmlSetsXmlAsReturnType() {
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
         $request       = new DomaintoolsAPI($configuration);
 
         $request->toXml();
@@ -248,7 +248,7 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      * Checks toHtml() sets 'html' as returnType
      */
     public function testToHtmlSetsHtmlAsReturnType() {
-        $configuration = new DomaintoolsAPIConfiguration(__DIR__.'/../api.ini');
+        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
         $request       = new DomaintoolsAPI($configuration);
 
         $request->toHtml();
