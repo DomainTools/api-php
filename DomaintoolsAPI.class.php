@@ -101,7 +101,7 @@ class DomaintoolsAPI {
      */
     public function __construct($configuration=false) {
 
-        $this->configuration  = (empty($configuration))? new domaintoolsAPIConfiguration() : $configuration;
+        $this->configuration  = (empty($configuration))? new DomaintoolsAPIConfiguration() : $configuration;
         $this->options        = array();
     }
 
@@ -126,6 +126,17 @@ class DomaintoolsAPI {
         }
         $this->returnType = $returnType;
         return $this;
+    }
+    
+    /**
+     * This function allows you to specify the return type of the service
+     * @param string $returnType (json, xml, html)
+     * @return DomaintoolsAPI $this
+     */
+    public function asFree($active=true) {
+      if($active) $this->configuration->set('host',DomaintoolsAPIConfiguration::FREE_HOST);
+      else $this->configuration->set('host',DomaintoolsAPIConfiguration::DEFAULT_HOST);
+      return $this;
     }
 
     /**
@@ -166,7 +177,7 @@ class DomaintoolsAPI {
      * @return DomaintoolsAPIResponse $response (if no returnType is specified)
      */
     public function execute($debug = false) {
-
+        var_dump($this);
         $rawResponse = "";
         $this->buildOptions();
 

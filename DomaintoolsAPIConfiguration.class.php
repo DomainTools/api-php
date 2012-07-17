@@ -10,6 +10,9 @@ require_once("lib/REST_Service/curl_rest_service_class.inc.php");
 require_once("exceptions/ServiceException.class.php");
 
 class DomaintoolsAPIConfiguration {
+  
+  CONST DEFAULT_HOST = 'api.domaintools.com';
+  CONST FREE_HOST = 'freeapi.domaintools.com';
 
 	/**
 	 * Server Host
@@ -71,9 +74,9 @@ class DomaintoolsAPIConfiguration {
 	 * (that will be use to complete if necessary)
 	 */
 	protected $defaultConfig = array(
+	      'host'           => DomaintoolsAPIConfiguration::DEFAULT_HOST,
         'username'       => '',
         'key'            => '',
-        'host'           => 'api.domaintools.com',
         'port'           => '80',
         'version'        => 'v1',
         'secure_auth'    => true,
@@ -110,23 +113,32 @@ class DomaintoolsAPIConfiguration {
    */
     protected function init($config = array()) {
 
-        $config                         = $this->validateParams($config);
+        $config               = $this->validateParams($config);
 
-        $this->host 			        = $config['host'];
-        $this->port						= $config['port'];
-        $this->subUrl					= $config['version'];
-        $this->username					= $config['username'];
-        $this->password					= $config['key'];
-        $this->secureAuth               = $config['secure_auth'];
-        $this->returnType				= $config['return_type'];
-        $this->contentType				= $config['content_type'];
-        $this->transportType            = $config['transport_type'];
+        $this->host           = $config['host'];
+        $this->port           = $config['port'];
+        $this->subUrl         = $config['version'];
+        $this->username       = $config['username'];
+        $this->password       = $config['key'];
+        $this->secureAuth     = $config['secure_auth'];
+        $this->returnType     = $config['return_type'];
+        $this->contentType    = $config['content_type'];
+        $this->transportType  = $config['transport_type'];
 
-        $this->baseUrl					= 'http://'.$this->host.':'.$this->port.'/'.$this->subUrl;
+        $this->createBaseUrl();
 
         $className                      = ucfirst($this->transportType).'RestService';
         $this->transport                = RESTServiceAbstract::factory($className, array($this->contentType));
-
+    }
+    
+    
+    /**
+     * Create the baseUrl for next requests based on current config
+     * @return String baseUrl
+     */
+    protected function createBaseUrl() {
+      $this->baseUrl = 'http://'.$this->host.':'.$this->port.'/'.$this->subUrl;
+      return $this->baseUrl;
     }
 
     /**
@@ -172,6 +184,7 @@ class DomaintoolsAPIConfiguration {
      */
     public function set($var,$val) {
         $this->$var = $val;
+        $this->createBaseUrl();
         return $this;
     }
 }
