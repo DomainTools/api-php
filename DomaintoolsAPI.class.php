@@ -177,7 +177,6 @@ class DomaintoolsAPI {
      * @return DomaintoolsAPIResponse $response (if no returnType is specified)
      */
     public function execute($debug = false) {
-        var_dump($this);
         $rawResponse = "";
         $this->buildOptions();
 
