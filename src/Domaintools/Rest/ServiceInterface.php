@@ -7,11 +7,14 @@
  * file that was distributed with this source code.
  */
 
+namespace Domaintools\Rest;
+
 /**
  * Interface for the REST Services
  * http://en.wikipedia.org/wiki/HyperText_Transfer_Protocol
  */
-interface RESTServiceInterface {
+interface ServiceInterface
+{
 	/**
 	 * GET
 	 * Requests a representation of the specified resource
@@ -69,5 +72,3 @@ interface RESTServiceInterface {
 	 */
 	public function getStatus();
 }
-?>
-

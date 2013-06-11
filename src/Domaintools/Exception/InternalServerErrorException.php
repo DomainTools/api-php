@@ -7,10 +7,8 @@
  * file that was distributed with this source code.
  */
 
-class ServiceUnavailableException extends ServiceException {
-    public function __construct($message='', $code=0) {
-        parent::__construct($message, $code);
-    }
-}
-?>
+namespace Domaintools\Exception;
 
+class InternalServerErrorException extends Domaintools\Exception\ServiceException 
+{
+}

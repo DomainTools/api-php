@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'rest_service_abstract_class.inc.php');
+namespace Domaintools\Rest;
 
 /**
  * REST over CURL Implementation
@@ -17,7 +17,8 @@ require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'rest_service_abstract_class.
  * 	$curlRestService = new CurlRestService();
  * 	echo $curlRestService->get('http://www.domaintools.com');
  */
-final class CurlRestService extends RESTServiceAbstract {
+final class CurlService extends ServiceAbstract 
+{
 
     private $lastInfo;
 
@@ -107,6 +108,3 @@ final class CurlRestService extends RESTServiceAbstract {
 	  return $this->lastInfo['http_code'];
 	}
 }
-
-?>
-

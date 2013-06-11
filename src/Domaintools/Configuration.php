@@ -6,13 +6,15 @@
 * file that was distributed with this source code.
 */
 
-require_once("lib/REST_Service/curl_rest_service_class.inc.php");
-require_once("exceptions/ServiceException.class.php");
+namespace Domaintools;
 
-class DomaintoolsAPIConfiguration {
-  
-  CONST DEFAULT_HOST = 'api.domaintools.com';
-  CONST FREE_HOST = 'freeapi.domaintools.com';
+use Domaintools\Exception\ServiceException;
+
+class Configuration
+{
+      
+    CONST DEFAULT_HOST = 'api.domaintools.com';
+    CONST FREE_HOST = 'freeapi.domaintools.com';
 
 	/**
 	 * Server Host
@@ -69,22 +71,26 @@ class DomaintoolsAPIConfiguration {
 	 */
 	protected $defaultConfigPath;
 
-	/**
-	 * default configuration
-	 * (that will be use to complete if necessary)
-	 */
-	protected $defaultConfig = array(
-	      'host'           => DomaintoolsAPIConfiguration::DEFAULT_HOST,
+        /**
+         * Whether to use an SSL channel
+         * @var boolean
+         */
+        protected $useSSL = true;
+
+    protected $defaultConfig = array(
+        'host'           => self::DEFAULT_HOST,
         'username'       => '',
         'key'            => '',
-        'port'           => '80',
+        'port'           => '443',
         'version'        => 'v1',
         'secure_auth'    => true,
         'return_type'    => 'json',
         'transport_type' => 'curl',
-        'content_type'   => 'application/json'
+        'content_type'   => 'application/json',
+        'use_ssl'        => true
     );
 
+    
   /**
    * Construct of the class and initiliaze with default values (if no config given)
    * @param mixed $ini_resource
@@ -97,7 +103,7 @@ class DomaintoolsAPIConfiguration {
 
         if(!is_array($ini_resource)) {
             if(!file_exists($ini_resource)) {
-                throw new ServiceException(ServiceException::INVALID_CONFIG_PATH);
+                throw new Exception\ServiceException(Exception\ServiceException::INVALID_CONFIG_PATH);
             }
             $config = parse_ini_file($ini_resource);
         }
@@ -124,20 +130,26 @@ class DomaintoolsAPIConfiguration {
         $this->returnType     = $config['return_type'];
         $this->contentType    = $config['content_type'];
         $this->transportType  = $config['transport_type'];
+        $this->useSSL           = $config['use_ssl'];
 
         $this->createBaseUrl();
 
-        $className                      = ucfirst($this->transportType).'RestService';
-        $this->transport                = RESTServiceAbstract::factory($className, array($this->contentType));
+        $className                      = 'Domaintools\Rest\\'.ucfirst($this->transportType).'Service';
+        $this->transport                = Rest\ServiceAbstract::factory($className, array($this->contentType));
     }
     
     
     /**
      * Create the baseUrl for next requests based on current config
+     * Default to secure connections
      * @return String baseUrl
      */
     protected function createBaseUrl() {
-      $this->baseUrl = 'http://'.$this->host.':'.$this->port.'/'.$this->subUrl;
+        $protocol = 'https';
+        if ($this->useSSL==false){
+            $protocol = 'http';
+        }
+      $this->baseUrl = $protocol.'://'.$this->host.':'.$this->port.'/'.$this->subUrl;
       return $this->baseUrl;
     }
 
@@ -160,13 +172,13 @@ class DomaintoolsAPIConfiguration {
         }*/
 
         try {
-            $class = new ReflectionClass($config['transport_type'].'RestService');
+            $class = new \ReflectionClass("\Domaintools\\Rest\\".$config['transport_type'].'Service');
         }
-        catch(ReflectionException $e) {
-            throw new ReflectionException(ServiceException::TRANSPORT_NOT_FOUND);
+        catch(\ReflectionException $e) {
+            throw new \ReflectionException(ServiceException::TRANSPORT_NOT_FOUND);
         }
 
-        if(!$class->implementsInterface('RestServiceInterface')) {
+        if(!$class->implementsInterface('Domaintools\Rest\ServiceInterface')) {
             $config['transport_type'] = $this->defaultConfig['transport_type'];
         }
 

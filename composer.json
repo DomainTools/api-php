@@ -1,0 +1,26 @@
+{
+    "name": "Awnage/Domaintools",
+    "description": "Modification of the Domaintools api-php repo to be composer and namespace friendly",
+    "type": "library",
+    "license": "See License File",
+    "authors": [
+        {
+            "name": "DomainTools Team",
+            "email": "support@domaintools.com",
+        },
+        {
+            "name": "Gregory Wilson",
+            "email": "g.wilson@redport-ia.com",
+        }
+    ],
+    "require": {
+        "php": ">=5.3.4",
+    },
+    "require-dev": {
+    },
+    "suggest": {
+    },
+    "autoload": {
+        "psr-0": {"Domaintools": "src/"}
+    },
+}

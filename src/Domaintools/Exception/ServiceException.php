@@ -7,7 +7,9 @@
  * file that was distributed with this source code.
  */
 
-class ServiceException extends Exception {
+namespace Domaintools\Exception;
+
+class ServiceException extends \Exception {
 
     const INVALID_CONFIG_PATH    = "Config file does not exist";
 
@@ -19,7 +21,7 @@ class ServiceException extends Exception {
     const INVALID_DOMAIN         = "Domain/Ip invalid";
     const INVALID_OPTIONS        = "Invalid options; options must be an array";
 
-    const TRANSPORT_NOT_FOUND    = "Transport not found; it must refer to a class that implements RESTServiceInterface";
+    const TRANSPORT_NOT_FOUND    = "Transport not found; it must refer to a class that implements ServiceInterface";
     const DOMAIN_CALL_REQUIRED   = "Domain is required for this service";
     const IP_CALL_REQUIRED       = "Ip address is required for this service";
     const EMPTY_CALL_REQUIRED    = "No domain or ip is required for this service";
@@ -31,5 +33,3 @@ class ServiceException extends Exception {
         parent::__construct($message, $code);
     }
 }
-?>
-
