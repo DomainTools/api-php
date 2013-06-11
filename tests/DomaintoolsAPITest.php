@@ -255,4 +255,3 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($request->getReturnType()=='html');
     }
 }
-
