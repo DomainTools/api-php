@@ -12,5 +12,3 @@ class InternalServerErrorException extends ServiceException {
         parent::__construct($message, $code);
     }
 }
-?>
-

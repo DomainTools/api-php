@@ -188,4 +188,3 @@ class DomaintoolsAPIConfiguration {
         return $this;
     }
 }
-

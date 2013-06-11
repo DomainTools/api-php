@@ -13,5 +13,3 @@ class BadRequestException extends ServiceException {
         parent::__construct($message, $code);
     }
 }
-?>
-

@@ -95,4 +95,3 @@ class DomaintoolsAPIResponse {
         return $this->request;
     }
 }
-

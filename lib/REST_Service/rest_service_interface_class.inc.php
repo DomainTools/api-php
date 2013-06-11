@@ -69,5 +69,3 @@ interface RESTServiceInterface {
 	 */
 	public function getStatus();
 }
-?>
-

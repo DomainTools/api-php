@@ -12,5 +12,3 @@ class NotFoundException extends ServiceException {
         parent::__construct($message, $code);
     }
 }
-?>
-

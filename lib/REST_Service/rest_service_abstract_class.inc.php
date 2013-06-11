@@ -121,6 +121,3 @@ abstract class RESTServiceAbstract implements RESTServiceInterface {
 		}
 	}
 }
-
-?>
-

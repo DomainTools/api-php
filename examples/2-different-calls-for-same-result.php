@@ -24,4 +24,3 @@ echo $request2->from('whois')->domain('domaintools.com')->toJson()->execute() . 
 $request3 = new DomaintoolsAPI();
 $request3->from('whois')->domain('domaintools.com')->toJson()->execute();
 echo $request3->getRawResponse() . "\n";
-

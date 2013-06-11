@@ -107,6 +107,3 @@ final class CurlRestService extends RESTServiceAbstract {
 	  return $this->lastInfo['http_code'];
 	}
 }
-
-?>
-

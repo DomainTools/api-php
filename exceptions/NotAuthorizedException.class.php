@@ -12,5 +12,3 @@ class NotAuthorizedException extends ServiceException {
         parent::__construct($message, $code);
     }
 }
-?>
-

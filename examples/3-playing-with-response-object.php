@@ -18,4 +18,3 @@ echo $response->registration->created   ."\n";
 echo $response->name_servers[0]   ."\n";
 echo $response->whois->date . "\n";
 echo $response->whois->record . "\n";
-
