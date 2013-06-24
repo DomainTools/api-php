@@ -81,13 +81,13 @@ class Configuration
         'host'           => self::DEFAULT_HOST,
         'username'       => '',
         'key'            => '',
-        'port'           => '443',
+        'port'           => '80',
         'version'        => 'v1',
         'secure_auth'    => true,
         'return_type'    => 'json',
         'transport_type' => 'curl',
         'content_type'   => 'application/json',
-        'use_ssl'        => true
+        'use_ssl'        => false
     );
 
     
@@ -99,7 +99,9 @@ class Configuration
 
         $this->defaultConfigPath = dirname(__FILE__).'/api.ini';
 
-        if(empty($ini_resource)) $ini_resource = $this->defaultConfigPath;
+        if(empty($ini_resource)){
+            $ini_resource = $this->defaultConfigPath;
+        }
 
         if(!is_array($ini_resource)) {
             if(!file_exists($ini_resource)) {
@@ -134,7 +136,8 @@ class Configuration
 
         $this->createBaseUrl();
 
-        $className                      = 'Domaintools\Rest\\'.ucfirst($this->transportType).'Service';
+        $className                      = "Domaintools\Rest\\" .ucfirst($this->transportType).'Service';
+        
         $this->transport                = Rest\ServiceAbstract::factory($className, array($this->contentType));
     }
     
@@ -163,19 +166,19 @@ class Configuration
 
         $config = array_merge($this->defaultConfig, $config);
 
-        /*if(empty($config['username'])) {
-            throw new ServiceException(ServiceException::EMPTY_API_USERNAME);
+        if(empty($config['username'])) {
+            throw new Exception\NotAuthorizedException(ServiceException::EMPTY_API_USERNAME);
         }
 
         if(empty($config['key'])) {
-            throw new ServiceException(ServiceException::EMPTY_API_KEY);
-        }*/
+            throw new Exception\NotAuthorizedException(ServiceException::EMPTY_API_KEY);
+        }
 
         try {
-            $class = new \ReflectionClass("\Domaintools\\Rest\\".$config['transport_type'].'Service');
+            $class = new \ReflectionClass("Domaintools\Rest\\{$config['transport_type']}Service");
         }
         catch(\ReflectionException $e) {
-            throw new \ReflectionException(ServiceException::TRANSPORT_NOT_FOUND);
+            throw new \ReflectionException(Exception\ServiceException::TRANSPORT_NOT_FOUND);
         }
 
         if(!$class->implementsInterface('Domaintools\Rest\ServiceInterface')) {

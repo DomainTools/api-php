@@ -1,14 +1,14 @@
-# domaintoolsAPI PHP Wrapper #
+# Domaintools API PHP Wrapper #
 
 ## Presentation ##
 
-The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices of [domaintools.com](http://domaintools.com "domaintools.com").
+The Domaintools API PHP Wrapper is a simple connector to access all webservices of [domaintools.com](http://domaintools.com "domaintools.com").
 
 ## Getting started ##
 
 1- Clone the project with Git by running:
 
-    $ git clone git://github.com/DomainTools/api-php
+    $ git clone git://github.com/Awnage/DomainTools
 
 2- Rename the **api.ini.default** to **api.ini**
 
@@ -21,12 +21,16 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 
 ```php
 <?php
-  // Require domaintoolsAPI PHP wrapper
-  require_once 'my/path/to/DomaintoolsAPI.class.php';
+  // Set up an autoloader
+    function __autoload($class) {
+        // convert namespace to full file path
+        $class = 'src/' . str_replace('\\', '/', $class) . '.php';
+        require_once($class);
+    }
 
   //Make a call to the webservice whois with a xml return
   //type for the domain name : domaintools.com
-  $request = new DomaintoolsAPI();
+  $request = new \Domaintools\Domaintools();
 
   $request->from("whois")               // Name of the service
           ->withType("xml")             // Return type (JSON or XML or HTML)
@@ -42,11 +46,9 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
 
 ```php
 <?php
-  // Require domaintoolsAPI PHP wrapper
-  require_once 'my/path/to/DomaintoolsAPI.class.php';
 
   // we get the default configuration
-  $configuration = new DomaintoolsAPIConfiguration();
+  $configuration = new \Domaintools\Configuration();
 
   // we change some values
   $configuration->set('username','anotherUsername')
@@ -55,7 +57,7 @@ The domaintoolsAPI PHP Wrapper is a simple connector to access all webservices o
   // Make a call to the webservice whois with a xml return
   // type for the domain name : domaintools.com
 
-  $request = new DomaintoolsAPI($configuration);
+  $request = new \Domaintools\Domaintools($configuration);
   $request->from("whois")
           ->withType("xml")
           ->domain("domaintools.com");
@@ -153,7 +155,7 @@ The domaintoolsAPI PHP Wrapper is a fluent API implemented by using method chain
 After having instanciate your request like this:
 
 ```php
-<?php $request = new DomaintoolsAPI(); ?>
+<?php $request = new \Domaintools\Domaintools(); ?>
 ```
 
 You can combine methods to specify return type, options, etc.:
@@ -205,9 +207,9 @@ You can also use **toJson**, **toXml** and **toHtml** as aliases of withType :
 ?>
 ```
 
-### If no return type, a DomaintoolsAPIResponse object is returned ###
+### If no return type, a \Domaintools\Response object is returned ###
 
-By default (If you don't call the method withType) the return type used is  a **DomaintoolsAPIResponse** object:
+By default (If you don't call the method withType) the return type used is  a **\Domaintools\Response** object:
 
 ```php
 <?php

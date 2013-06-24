@@ -1,3 +1,5 @@
 <?php
-class FakeRestService {
-}
+
+namespace Domaintools\Rest;
+
+class FakeRestService {}

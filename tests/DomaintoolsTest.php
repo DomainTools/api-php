@@ -1,10 +1,13 @@
 <?php
-require_once dirname(__FILE__).'/../DomaintoolsAPI.class.php';
+//require_once dirname(__FILE__).'/../Domaintools.class.php';
 
-class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
+namespace Domaintools;
+
+class DomaintoolsTest extends \PHPUnit_Framework_TestCase 
+{
 
     protected function getTransport($url, $fixture_path, $status = 200) {
-        $transport = $this->getMock('RestServiceInterface');
+        $transport = $this->getMock('Domaintools\Rest\ServiceInterface');
 
         $transport->expects($this->any())
                     ->method('get')
@@ -21,18 +24,20 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
 
   /**
    * Checks the transport object is really called
+   * @expectedException Domaintools\Exception\ServiceException
+   * @expectedExceptionMessage Response is empty
    */
     public function testTransportCallsOnGet() {
 
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
 
-        $request = new DomaintoolsAPI($configuration);
+        $request = new Domaintools($configuration);
 
         $request->withType('xml')
                 ->from('domain-profile')
                 ->domain('domaintools.com');
 
-        $transport = $this->getMock('RestServiceInterface');
+        $transport = $this->getMock('Domaintools\Rest\ServiceInterface');
 
         $transport->expects($this->once())
               ->method('get')
@@ -52,8 +57,8 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testJsonCallIfUnknownReturnType() {
 
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
-        $request       = new DomaintoolsAPI($configuration);
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $request       = new Domaintools($configuration);
 
         $request->withType('unknownType')->domain('domaintools.com');
 
@@ -70,15 +75,16 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
 
     /**
      * Checks ServiceException raised if invalid options
+     * @expectedException Domaintools\Exception\ServiceException
      */
     public function testServiceExceptionIfInvalidOptions() {
 
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
-        $request       = new DomaintoolsAPI($configuration);
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $request       = new Domaintools($configuration);
         try {
             $request->where('invalidOptions');
-        } catch (ServiceException $e) {
-            $this->assertTrue($e->getMessage() == ServiceException::INVALID_OPTIONS);
+        } catch (Exception $e) {
+            $this->assertTrue($e->getMessage() == Exception\ServiceException::INVALID_OPTIONS);
         }
     }
 
@@ -87,11 +93,11 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      */
     public function testAddCredentialsForUnsecureAuthentication() {
 
-        $config        = parse_ini_file(dirname(__FILE__).'/../api.ini');
-        $configuration = new DomaintoolsAPIConfiguration($config);
+        $config        = parse_ini_file(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $configuration = new Configuration($config);
         $configuration->set('secureAuth', false);
 
-        $request       = new DomaintoolsAPI($configuration);
+        $request       = new Domaintools($configuration);
         $request->addCredentialsOptions();
 
         $options       = $request->getOptions();
@@ -104,11 +110,12 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
 
     /**
      * Checks BadRequestException raised for status code 400
+     * @expectedException Domaintools\Exception\BadRequestException
      */
     public function testBadRequestExceptionRaised() {
 
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
-        $request       = new DomaintoolsAPI($configuration);
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $request       = new Domaintools($configuration);
 
         $request->withType('json')->domain('domaintools.com');
 
@@ -118,21 +125,17 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
 
         $request->setTransport($transport);
 
-        try {
             $request->execute();
-        }
-        catch(Exception $e) {
-            $this->assertTrue($e instanceof BadRequestException);
-        }
     }
 
     /**
      * Checks NotAuthorizedException raised for status code 403
+     * @expectedException Domaintools\Exception\NotAuthorizedException
      */
     public function testNotAuthorizedExceptionRaised() {
 
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
-        $request       = new DomaintoolsAPI($configuration);
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $request       = new Domaintools($configuration);
 
         $request->withType('json')->domain('domaintools.com');
 
@@ -142,21 +145,17 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
 
         $request->setTransport($transport);
 
-        try {
-            $request->execute();
-        }
-        catch(Exception $e) {
-            $this->assertTrue($e instanceof NotAuthorizedException);
-        }
+        $request->execute();
     }
 
     /**
      * Checks NotFoundException raised for status code 404
+     * @expectedException Domaintools\Exception\NotFoundException
      */
     public function testNotFoundExceptionRaised() {
 
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
-        $request       = new DomaintoolsAPI($configuration);
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $request       = new Domaintools($configuration);
 
         $request->withType('json')->domain('domaintools.com');
 
@@ -166,21 +165,17 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
 
         $request->setTransport($transport);
 
-        try {
-            $request->execute();
-        }
-        catch(Exception $e) {
-            $this->assertTrue($e instanceof NotFoundException);
-        }
+        $request->execute();
     }
 
     /**
      * Checks InternalServerErrorException raised for status code 500
+     * @expectedException Domaintools\Exception\InternalServerErrorException
      */
     public function testInternalServerErrorExceptionRaised() {
 
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
-        $request       = new DomaintoolsAPI($configuration);
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $request       = new Domaintools($configuration);
 
         $request->withType('json')->domain('domaintools.com');
 
@@ -190,21 +185,17 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
 
         $request->setTransport($transport);
 
-        try {
-            $request->execute();
-        }
-        catch(Exception $e) {
-            $this->assertTrue($e instanceof InternalServerErrorException);
-        }
+        $request->execute();
     }
 
     /**
      * Checks ServiceUnavailableException raised for status code 503
+     * @expectedException Domaintools\Exception\ServiceUnavailableException
      */
     public function testServiceUnavailableExceptionRaised() {
 
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
-        $request       = new DomaintoolsAPI($configuration);
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $request       = new Domaintools($configuration);
 
         $request->withType('json')->domain('domaintools.com');
 
@@ -214,20 +205,15 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
 
         $request->setTransport($transport);
 
-        try {
-            $request->execute();
-        }
-        catch(Exception $e) {
-            $this->assertTrue($e instanceof ServiceUnavailableException);
-        }
+        $request->execute();
     }
 
     /**
      * Checks toJson() sets 'json' as returnType
      */
     public function testToJsonSetsJsonAsReturnType() {
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
-        $request       = new DomaintoolsAPI($configuration);
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $request       = new Domaintools($configuration);
 
         $request->toJson();
         $this->assertTrue($request->getReturnType()=='json');
@@ -237,8 +223,8 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      * Checks toXml() sets 'xml' as returnType
      */
     public function testToXmlSetsXmlAsReturnType() {
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
-        $request       = new DomaintoolsAPI($configuration);
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $request       = new Domaintools($configuration);
 
         $request->toXml();
         $this->assertTrue($request->getReturnType()=='xml');
@@ -248,8 +234,8 @@ class DomaintoolsAPITest extends PHPUnit_Framework_TestCase {
      * Checks toHtml() sets 'html' as returnType
      */
     public function testToHtmlSetsHtmlAsReturnType() {
-        $configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
-        $request       = new DomaintoolsAPI($configuration);
+        $configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
+        $request       = new Domaintools($configuration);
 
         $request->toHtml();
         $this->assertTrue($request->getReturnType()=='html');

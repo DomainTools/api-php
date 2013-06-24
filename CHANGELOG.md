@@ -1,5 +1,10 @@
 # Changelog #
 
+## Release x.y.z ##
+
+* Switch to PHP namespaces
+* Add composer packaging
+
 ## Release 0.0.3 ##
 
 * Move and Refactor toJson, toXml, toHtml methods

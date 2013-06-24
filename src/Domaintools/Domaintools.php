@@ -388,8 +388,8 @@ class Domaintools
     protected function parseError($response)
     {
         $returnType          = $this->getReturnType();
-        $rep                 = new stdClass;
-        $rep->error          = new stdClass;
+        $rep                 = new \stdClass;
+        $rep->error          = new \stdClass;
         $rep->error->code    = 0;
         $rep->error->message = '';
 

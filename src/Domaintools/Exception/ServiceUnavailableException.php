@@ -9,6 +9,6 @@
 
 namespace Domaintools\Exception;
 
-class ServiceUnavailableException extends Domaintools\Exception\ServiceException 
+class ServiceUnavailableException extends ServiceException 
 {
 }
