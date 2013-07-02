@@ -55,6 +55,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Checks exception raised if a valid json string is not given
+     * @zexpectedException Domaintools\Exception\ServiceException
      */
     public function testExceptionIfInvalidJsonGiven() {
         $json = 'xx}}';
