@@ -8,10 +8,18 @@ key            = 'your_api_key'
 host           = 'api.domaintools.com'
 ; host         = 'freeapi.domaintools.com'
 
+; Extra options that may be helpful when using the curl transport
+;CURLOPT_PROXY = 'proxy.local:3130'
+;CURLOPT_HTTPPROXYTUNNEL= 1
+;CURLOPT_SSL_VERIFYHOST = 1
+;CURLOPT_SSL_VERIFYPEER = 2
+;CURLOPT_FOLLOWLOCATION = 1
+;CURLOPT_CAINFO = "PATH_TO_DOMAINTOOLS_PEM_CERT"
+
 ; NO NEED TO EDIT BELOW
 port           = '80'
 version        = 'v1'
 secure_auth    = true
 return_type    = 'json'
-transport_type = 'curl'
+transport_type = 'Curl'
 content_type   = 'application/json'

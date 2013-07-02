@@ -261,7 +261,9 @@ class Domaintools
      */
     public function where($options) 
     {
-        if(!is_array($options)) throw new Exception\ServiceException(Exception\ServiceException::INVALID_OPTIONS);
+        if(!is_array($options)) {
+            throw new Exception\ServiceException(Exception\ServiceException::INVALID_OPTIONS);
+        }
         $this->options = array_merge($this->options, $options);
         return $this;
     }
@@ -388,8 +390,8 @@ class Domaintools
     protected function parseError($response)
     {
         $returnType          = $this->getReturnType();
-        $rep                 = new stdClass;
-        $rep->error          = new stdClass;
+        $rep                 = new \stdClass;
+        $rep->error          = new \stdClass;
         $rep->error->code    = 0;
         $rep->error->message = '';
 

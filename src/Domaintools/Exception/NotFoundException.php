@@ -9,6 +9,6 @@
 
 namespace Domaintools\Exception;
 
-class NotFoundException extends Domaintools\Exception\ServiceException 
+class NotFoundException extends ServiceException 
 {
 }

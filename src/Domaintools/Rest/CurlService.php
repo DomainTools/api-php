@@ -46,7 +46,7 @@ final class CurlService extends ServiceAbstract
 	 */
 	protected function send($method, $url, $dataArr = array()) {
 		if (($cUrl = curl_init($url)) == false)	{
-		 	throw new Exception("CURL_INIT ERROR [".$url." | ".curl_error($cUrl)."]");
+		 	throw new \Exception("CURL_INIT ERROR [".$url." | ".curl_error($cUrl)."]");
 		}
 
 		curl_setopt($cUrl, CURLOPT_URL, $url);
@@ -75,6 +75,7 @@ final class CurlService extends ServiceAbstract
 			else {
 				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array('Content-Length: '.strlen($data)));
 			}
+                        curl_setopt($cUrl, CURLOPT_POST, true);
 			curl_setopt($cUrl, CURLOPT_POSTFIELDS, $data);
 		}
 		if (in_array(strtoupper($method), array('POST','PUT')) AND !is_array ($dataArr)) {
@@ -88,10 +89,11 @@ final class CurlService extends ServiceAbstract
 				curl_setopt($cUrl, CURLOPT_HTTPHEADER, array('Content-Length: '.strlen($data)));
 			}
 
+                        curl_setopt($cUrl, CURLOPT_POST, true);
 			curl_setopt($cUrl, CURLOPT_POSTFIELDS, $data);
 		}
 		if (($result = curl_exec($cUrl)) == false) {
-			throw new Exception("CURL_EXEC ERROR [".$url." | ".curl_error($cUrl)."]");
+			throw new \Exception("CURL_EXEC ERROR [".$url." | ".curl_error($cUrl)."]");
 		}
 		$this->lastInfo = curl_getinfo($cUrl);
 		//Close connection

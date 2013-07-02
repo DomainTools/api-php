@@ -9,6 +9,6 @@
 
 namespace Domaintools\Exception;
 
-class NotAuthorizedException extends Domaintools\Exception\ServiceException 
+class NotAuthorizedException extends ServiceException 
 {
 }

@@ -9,6 +9,6 @@
 
 namespace Domaintools\Exception;
 
-class InternalServerErrorException extends Domaintools\Exception\ServiceException 
+class InternalServerErrorException extends ServiceException
 {
 }

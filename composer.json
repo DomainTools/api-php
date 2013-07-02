@@ -6,21 +6,24 @@
     "authors": [
         {
             "name": "DomainTools Team",
-            "email": "support@domaintools.com",
+            "email": "support@domaintools.com"
         },
         {
             "name": "Gregory Wilson",
-            "email": "g.wilson@redport-ia.com",
+            "email": "g.wilson@redport-ia.com"
         }
     ],
     "require": {
-        "php": ">=5.3.4",
+        "php": ">=5.3.4"
     },
     "require-dev": {
+        "phpunit/phpunit": "3.7.*"
     },
     "suggest": {
     },
     "autoload": {
-        "psr-0": {"Domaintools": "src/"}
-    },
+        "psr-0": {
+            "Domaintools": "src/"
+        }
+    }
 }

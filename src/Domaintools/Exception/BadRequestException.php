@@ -10,6 +10,6 @@
 
 namespace Domaintools\Exception;
 
-class BadRequestException extends Domaintools\Exception\ServiceException 
+class BadRequestException extends ServiceException 
 {
 }

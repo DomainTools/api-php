@@ -1,24 +1,27 @@
 <?php
 
-require_once dirname(__FILE__).'/../DomaintoolsAPIResponse.class.php';
-require_once dirname(__FILE__).'/../DomaintoolsAPI.class.php';
-require_once dirname(__FILE__).'/../DomaintoolsAPIConfiguration.class.php';
+//require_once dirname(__FILE__).'/../DomaintoolsResponse.class.php';
+//require_once dirname(__FILE__).'/../Domaintools.class.php';
+//require_once dirname(__FILE__).'/../Configuration.class.php';
 
-class DomaintoolsResponseTest extends PHPUnit_Framework_TestCase {
+namespace Domaintools;
+
+class ResponseTest extends \PHPUnit_Framework_TestCase 
+{
     /**
      * Init a transport
      */
     protected function getTransport($url, $fixture_path, $status = 200) {
-        $transport = $this->getMock('RestServiceInterface');
+        $transport = $this->getMock('Domaintools\Rest\ServiceInterface');
 
         $transport->expects($this->any())
-                ->method('get')
-                ->with($url)
-                ->will($this->returnValue(file_get_contents($fixture_path)));
+                    ->method('get')
+                    ->with($url)
+                    ->will($this->returnValue(file_get_contents($fixture_path)));
 
         $transport->expects($this->any())
-                ->method('getStatus')
-                ->will($this->returnValue($status));
+                    ->method('getStatus')
+                    ->will($this->returnValue($status));
 
         return $transport;
     }
@@ -27,9 +30,9 @@ class DomaintoolsResponseTest extends PHPUnit_Framework_TestCase {
      * Set up before each test
      */
     public function setUp() {
-        $this->configuration = new DomaintoolsAPIConfiguration(dirname(__FILE__).'/../api.ini');
+        $this->configuration = new Configuration(dirname(__FILE__)."/../src/Domaintools/api.ini");
 
-        $this->request       = new DomaintoolsAPI($this->configuration);
+        $this->request       = new Domaintools($this->configuration);
 
         $this->request->domain('domaintools.com');
 
@@ -42,27 +45,21 @@ class DomaintoolsResponseTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * Checks exception raised if a DomaintoolsAPI instance is not given
+     * Checks exception raised if a Domaintools instance is not given
+     * @expectedException Domaintools\Exception\ServiceException
+     * @expectedExceptionMessage Invalid object; DomaintoolsAPI instance required
      */
     public function testExceptionIfInvalidRequestObjectGiven() {
-
-        try {
-            $response = new DomaintoolsAPIResponse(new stdClass);
-        }
-        catch(ServiceException $e) {
-            $this->assertTrue($e->getMessage() == ServiceException::INVALID_REQUEST_OBJECT);
-        }
+        $response = new Response(new \stdClass);
     }
 
     /**
      * Checks exception raised if a valid json string is not given
      */
     public function testExceptionIfInvalidJsonGiven() {
-
-        $json = '';
-
+        $json = 'xx}}';
         try {
-            $response = new DomaintoolsAPIResponse($this->request, $json);
+            $response = new Response($this->request, $json);
         }
         catch(ServiceException $e) {
             $this->assertTrue($e->getMessage() == ServiceException::INVALID_JSON_STRING);
@@ -70,7 +67,7 @@ class DomaintoolsResponseTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * Checks DomaintoolsAPI instance has been attached to DomaintoolsAPIResponse
+     * Checks Domaintools instance has been attached to DomaintoolsResponse
      */
     public function testRequestObjectAttachedToResponse() {
 
